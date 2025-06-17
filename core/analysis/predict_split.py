@@ -49,7 +49,7 @@ def find_peaks(probability: MatLike,
     """Find peaks from a density mat."""
     peaks, props = ss.find_peaks(probability, distance=MIN_PEAK_DISTANCE, 
                              prominence=MIN_PEAK_PROMINENCE,
-                             width=1)
+                             width=(1,))
     lefts = props["left_ips"].astype(int)
     rights = props["right_ips"].astype(int)
     return np.round((lefts+rights)/2)
@@ -73,10 +73,9 @@ def paint_probabilities_and_peaks(img: MatLike,
     for y,l in enumerate(prob_line_length):
         cv2.line(alpha_layer, (0,y), (l,y), prob_color)
     
-    peaks = np.clip(peaks, 0, img_height - 2).astype(int)
     for y in peaks:
-        cv2.line(alpha_layer, (0, y), (img_width - 1, y), peak_color)
         if y>=(img_height-3): continue
+        cv2.line(alpha_layer, (0, y), (img_width - 1, y), peak_color)
         cv2.line(alpha_layer, (0, y+1), (img_width - 1, y+1), peak_color)
         
     cv2.addWeighted(img, 1.0-alpha, alpha_layer, alpha, 0, dst)
