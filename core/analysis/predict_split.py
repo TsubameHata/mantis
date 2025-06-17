@@ -11,15 +11,23 @@ def gen_sigmoid(t:float, k:float):
     return f
 
 KERNEL_SIZE_RATIO = 35
+THRESHOLD_PERCENTAGE = 50
 SIGMOID_T = 0.2
-SIGMOID_K = 30
+SIGMOID_K = 25
 
 sigmoid = gen_sigmoid(SIGMOID_T, SIGMOID_K)
 
 def split_probability(img: MatLike)->MatLike:
     """Get the probability of each height being the position to split using Gaussian convolution."""
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    density = np.sum(255 - gray, axis=1)
+    gray_reversed = 255 - gray
+    
+    white_threshold = np.percentile(gray_reversed, THRESHOLD_PERCENTAGE)
+    
+    gray_clipped = gray_reversed.copy()
+    gray_clipped[gray_clipped <= white_threshold] = 0
+    
+    density = np.sum(gray_clipped, axis=1)
     
     height = gray.shape[0]
     kernel_size = max(3, height//KERNEL_SIZE_RATIO | 1)
@@ -34,9 +42,10 @@ def split_probability(img: MatLike)->MatLike:
     
 
 MIN_PEAK_DISTANCE = 20
-MIN_PEAK_PROMINENCE = 0.05
 
-def find_peaks(probability: MatLike)->Iterable[int]:
+def find_peaks(probability: MatLike, 
+               MIN_PEAK_PROMINENCE=0.03, 
+               MIN_PEAK_DISTANCE=20)->Iterable[int]:
     """Find peaks from a density mat."""
     peaks, props = ss.find_peaks(probability, distance=MIN_PEAK_DISTANCE, 
                              prominence=MIN_PEAK_PROMINENCE,
@@ -67,12 +76,22 @@ def paint_probabilities_and_peaks(img: MatLike,
     peaks = np.clip(peaks, 0, img_height - 2).astype(int)
     for y in peaks:
         cv2.line(alpha_layer, (0, y), (img_width - 1, y), peak_color)
+        if y>=(img_height-3): continue
+        cv2.line(alpha_layer, (0, y+1), (img_width - 1, y+1), peak_color)
         
     cv2.addWeighted(img, 1.0-alpha, alpha_layer, alpha, 0, dst)
     
     return dst
 
 def test(input_dir: str, output_dir: str) -> None:
+    """Test all the features above.
+
+    Example:
+    ```python
+    import core.analysis.predict_split as ps
+    ps.test(...)
+    ```
+    """
     img = cv2.imread(input_dir)
     dst = paint_probabilities_and_peaks(img, alpha=0.5)
     cv2.imwrite(output_dir, dst)
