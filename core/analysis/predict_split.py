@@ -50,8 +50,8 @@ def find_peaks(probability: MatLike,
     peaks, props = ss.find_peaks(probability, distance=MIN_PEAK_DISTANCE, 
                              prominence=MIN_PEAK_PROMINENCE,
                              width=(1,))
-    lefts = props["left_ips"].astype(int)
-    rights = props["right_ips"].astype(int)
+    lefts = props["left_ips"].astype(int) # type: ignore
+    rights = props["right_ips"].astype(int) # type: ignore
     return np.round((lefts+rights)/2)
 
 def paint_probabilities_and_peaks(img: MatLike, 
