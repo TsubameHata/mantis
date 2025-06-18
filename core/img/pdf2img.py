@@ -40,6 +40,7 @@ def pdf2imgs(pdf: fitz.Document, pages: (Literal[True]|Iterable[int]|int)=True, 
     return dst
 
 def test(pdf: str):
+    """Convert the specified PDF to images in the same directory."""
     doc: fitz.Document
     with open(pdf, "rb") as f:
         doc = load_pdf(io.BytesIO(f.read()))
