@@ -4,4 +4,4 @@ analysis
 Provides specific image analysis functions.
 """
 
-import gaussian_conv
+from . import gaussian_conv
