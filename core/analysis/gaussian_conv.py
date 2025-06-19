@@ -87,7 +87,7 @@ def test(input_dir: str, output_dir: str) -> None:
 
     Example:
     ```python
-    import core.analysis.predict_split as ps
+    import core.analysis.gaussian_conv as gc
     ps.test(...)
     ```
     """
