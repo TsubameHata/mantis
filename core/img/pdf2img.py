@@ -1,10 +1,10 @@
 import fitz
 import io
-from typing import Iterable, Literal, List
+from typing import Iterable, Literal, List, IO
 
 from . import utils
 
-def load_pdf(pdf: io.BytesIO)->fitz.Document:
+def load_pdf(pdf: IO)->fitz.Document:
     """Load PDF to fitz.Document."""
     doc = fitz.open(stream=pdf, filetype="pdf")
     return doc
