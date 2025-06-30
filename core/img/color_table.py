@@ -25,7 +25,7 @@ def generate_color_table(levels_per_channel = 8) -> list[Color]:
     good_colors = list(gen_good_colors)
     
     gc_count = len(good_colors)
-    step2 = 5   # A random prime.
+    step2 = 3   # A random prime.
     shuffled = [good_colors[(i*step2)%gc_count] for i in range(gc_count)]
     
     return shuffled
@@ -33,6 +33,7 @@ def generate_color_table(levels_per_channel = 8) -> list[Color]:
 color_table = generate_color_table()
 
 def preview_colors(colors: Iterable[Color], columns=8, block="    ") -> None:
+    """Print the color to the terminal using ANSI escape sequences."""
     for i, (r, g, b) in enumerate(colors):
         print(f"\033[48;2;{r};{g};{b}m{block}\033[0m", end=" ")
         if (i + 1) % columns == 0:
