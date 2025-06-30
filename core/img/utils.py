@@ -1,4 +1,5 @@
-from typing import Iterable, IO
+from collections.abc import Iterable
+from typing import IO
 
 def save_imgs(imgs: Iterable[IO], path: str)-> None:
     imgs_and_paths = ((img,f"{path}_{index}.png") for index,img in enumerate(imgs))

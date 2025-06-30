@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 import scipy.signal as ss
-from typing import Iterable
+from collections.abc import Iterable
 
 MatLike = cv2.typing.MatLike
 

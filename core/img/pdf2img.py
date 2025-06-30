@@ -1,6 +1,7 @@
-import fitz
+import fitz # type: ignore
 import io
-from typing import Iterable, Literal, List, IO
+from collections.abc import Iterable
+from typing import IO
 
 from . import utils
 
@@ -9,7 +10,9 @@ def load_pdf(pdf: IO)->fitz.Document:
     doc = fitz.open(stream=pdf, filetype="pdf")
     return doc
 
-def pdf2imgs(pdf: fitz.Document, pages: (Literal[True]|Iterable[int]|int)=True, dpi=300)->Iterable[io.BytesIO]:
+def pdf2imgs(pdf: fitz.Document, 
+             pages: ( bool | int | Iterable[int] )=True, 
+             dpi=300) -> Iterable[io.BytesIO]:
     """Convert PDF to a list of images of selected pages in io.BytesIO in given order. 
     
     If page=True, convert all the pages."""
@@ -18,6 +21,8 @@ def pdf2imgs(pdf: fitz.Document, pages: (Literal[True]|Iterable[int]|int)=True, 
     pages_id: Iterable[int]
     
     match pages:
+        case False:
+            pages_id = []
         case True:
             pages_id = range(length)
         case int():
@@ -25,7 +30,7 @@ def pdf2imgs(pdf: fitz.Document, pages: (Literal[True]|Iterable[int]|int)=True, 
         case _:
             pages_id = pages
     
-    dst: List[io.BytesIO] = []
+    dst: list[io.BytesIO] = []
     
     for p in pages_id:
         page = pdf.load_page(p)
@@ -39,7 +44,7 @@ def pdf2imgs(pdf: fitz.Document, pages: (Literal[True]|Iterable[int]|int)=True, 
         
     return dst
 
-def test(pdf: str):
+def test(pdf: str) -> None:
     """Convert the specified PDF to images in the same directory."""
     doc: fitz.Document
     with open(pdf, "rb") as f:
