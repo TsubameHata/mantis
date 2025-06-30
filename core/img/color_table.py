@@ -1,7 +1,7 @@
 from itertools import combinations,product
 from collections.abc import Iterable
 
-Color = tuple[int, int, int]
+from ..shared.typing import Color
 
 def is_good_color(c: tuple[int, int, int], threshold = 20) -> bool:
     """Determine if a color is suitable for masks."""
@@ -25,7 +25,7 @@ def generate_color_table(levels_per_channel = 8) -> list[Color]:
     good_colors = list(gen_good_colors)
     
     gc_count = len(good_colors)
-    step2 = 3   # A random prime.
+    step2 = 31   # A random step.
     shuffled = [good_colors[(i*step2)%gc_count] for i in range(gc_count)]
     
     return shuffled

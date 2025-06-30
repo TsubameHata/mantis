@@ -1,9 +1,8 @@
 import cv2
+from cv2.typing import MatLike
 import numpy as np
 import scipy.signal as ss
 from collections.abc import Iterable
-
-MatLike = cv2.typing.MatLike
 
 def gen_sigmoid(t:float, k:float):
     def f(x: MatLike):
