@@ -1,7 +1,6 @@
 import uvicorn
 
-import api
-import analysis
+from . import api
 
 def main():
     uvicorn.run(api.app, port=11451)
