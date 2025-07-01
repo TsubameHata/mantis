@@ -18,7 +18,8 @@ def remove_background(img: MatLike,
                       color: Color, 
                       background_color = BACKGROUND_COLOR)->MatLike:
     mask_indices = get_mask_indicies(mask, color)
-    dst = np.broadcast_to(background_color, img.shape)
+    dst = np.zeros_like(img)
+    dst[:,:] = background_color
     dst[mask_indices] = img[mask_indices]
     return dst
 
