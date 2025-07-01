@@ -11,3 +11,7 @@ wheels/
 
 # mypy
 .mypy_cache
+
+# temp files for temporary tests
+temp/
+temp*
