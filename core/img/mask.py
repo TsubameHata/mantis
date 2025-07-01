@@ -38,6 +38,8 @@ def resize_and_paste(img: MatLike,
                      output_background_color: Color = (255,255,255),
                      shrink_y_overflow = False,
                      background_color = BACKGROUND_COLOR)->MatLike:
+    """Resize the image and paste it into a new image of specified size.
+    Though the output_inner_height is specified in int, it is greatly recommended to calculate it based on the aspect ratio of the area."""
     # Compute resizing coefficient
     origin_inner_height = inner_height[1]-inner_height[0]
     origin_height = border_height[1]-border_height[0]
@@ -45,8 +47,8 @@ def resize_and_paste(img: MatLike,
     k = output_inner_height / origin_inner_height
 
     center_direction = (inner_height[0] + inner_height[1]) // 2
-    upper = center_direction - inner_height[0]
-    lower = inner_height[1] - center_direction
+    upper = center_direction - border_height[0]
+    lower = border_height[1] - center_direction
     max_height_from_center = max(upper, lower)
 
     y_overflow_to_be_handled = False
@@ -61,7 +63,7 @@ def resize_and_paste(img: MatLike,
     img_cropped = img[border_height[0]:border_height[1], :]
 
     if y_overflow_to_be_handled:
-        delta_height = int(((2*k*max_height_from_center - out_height)/k)//2)
+        delta_height = int(((2*k*max_height_from_center - out_height)/k) // 2)
         img_cropped = img_cropped[delta_height:img_cropped.shape[0]-delta_height, :]
         upper = img_cropped.shape[0]//2
 
@@ -69,7 +71,6 @@ def resize_and_paste(img: MatLike,
     if output_img_size[1] <= k*img_cropped.shape[1]:
         delta_width = int(((k*img_cropped.shape[1] - output_img_size[1])/k + 4)//2)
         img_cropped = img_cropped[:, delta_width:img_cropped.shape[1]-delta_width]
-        print(output_img_size[1], k*img_cropped.shape[1], delta_width)
 
     resized = cv2.resize(img_cropped, dsize=(int(k*img_cropped.shape[1]), int(k*img_cropped.shape[0])), interpolation=cv2.INTER_LINEAR)
 
