@@ -26,7 +26,7 @@ def remove_background(img: MatLike,
 def get_border_height(img: MatLike, 
                       background_color = BACKGROUND_COLOR) -> tuple[int, int]:
     background_indices = np.all(img==background_color, axis=2)
-    mask_height = np.all(background_indices==False, axis=1)
+    mask_height = np.any(background_indices==False, axis=1)
     y_indices = np.where(mask_height)[0]
     return int(y_indices[0]), int(y_indices[-1]+1)
 
