@@ -3,7 +3,7 @@
 
 <template>
     <div>
-        Mantis Editor
+        {{ $t("test") }}
     </div>
 </template>
 
