@@ -1,10 +1,13 @@
 import { createApp } from "vue";
+import { createPinia } from "pinia";
 import { createI18n } from "vue-i18n";
 import App from "./App.vue";
 import "./main.css"
 
 import en_us from "./locales/en_us.json";
 import zh_cn from "./locales/zh_cn.json";
+
+const app = createApp(App);
 
 const i18n = createI18n({
     locale: "zh_cn",
@@ -14,8 +17,10 @@ const i18n = createI18n({
         en_us,
         zh_cn
     }
-})
-
-const app = createApp(App);
+});
 app.use(i18n)
+
+const pinia = createPinia()
+app.use(pinia)
+
 app.mount("#app");
