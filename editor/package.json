@@ -9,7 +9,9 @@
         "prettier": "prettier"
     },
     "dependencies": {
+        "@iconify/json": "^2.2.355",
         "ant-design-vue": "^4.2.6",
+        "unplugin-icons": "^22.1.0",
         "vue": "^3.5.17",
         "vue-i18n": "^11.1.9"
     },

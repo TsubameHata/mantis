@@ -1,4 +1,18 @@
 {
-    "test": "Mantis Editor",
-    "increment": "increment"
+    "menu": {
+        "help": {
+            "help": "Help",
+            "doc": "Documents",
+            "bug": "Bug Report",
+            "github": "Github Repo"
+        },
+        "files": {
+            "files": "Files",
+            "new": "New",
+            "open": "Open"
+        }
+    },
+    "tools": {
+        "cursor": "Cursor"
+    }
 }

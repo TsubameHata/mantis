@@ -1,6 +1,7 @@
 import { createApp } from "vue";
 import { createI18n } from "vue-i18n";
 import App from "./App.vue";
+import "./main.css"
 
 import en_us from "./locales/en_us.json";
 import zh_cn from "./locales/zh_cn.json";
@@ -8,6 +9,7 @@ import zh_cn from "./locales/zh_cn.json";
 const i18n = createI18n({
     locale: "zh_cn",
     fallbackLocale: "en_us",
+    legacy: false,
     messages: {
         en_us,
         zh_cn

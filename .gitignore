@@ -39,4 +39,8 @@ dist-ssr
 *.ntvs*
 *.njsproj
 *.sln
-*.sw?
+*.sw?u
+
+# Automaticly generated *.d.ts
+auto-imports.d.ts
+components.d.ts
