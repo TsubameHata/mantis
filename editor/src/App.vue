@@ -79,6 +79,7 @@
 }
 
 .bottom-toolbar {
+    width: 100%;
     background-color: white;
     z-index: 98;
     box-shadow: 0 -4px 6px -1px rgba(0,0,0,0.1),
@@ -87,5 +88,6 @@
     align-items: center;
     justify-content: center;
     flex-direction: row;
+    position: relative;
 }
 </style>

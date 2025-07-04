@@ -1,5 +1,7 @@
 <script setup lang="ts">
-const zoom = ref(0.5);
+import { useZoomLevel } from '../../store/appState';
+
+const zoomLevel = useZoomLevel();
 </script>
 
 <template>
@@ -28,6 +30,6 @@ const zoom = ref(0.5);
 <style scoped>
 .score_container {
     position: relative;
-    zoom: v-bind(zoom);
+    zoom: v-bind(zoomLevel.zoomRatio);
 }
 </style>
