@@ -1,18 +1,20 @@
 {
-    "menu": {
-        "help": {
-            "help": "Help",
-            "doc": "Documents",
-            "bug": "Bug Report",
-            "github": "Github Repo"
-        },
-        "files": {
-            "files": "Files",
-            "new": "New",
-            "open": "Open"
-        }
+  "menu": {
+    "help": {
+      "help": "Help",
+      "doc": "Documents",
+      "bug": "Bug Report",
+      "github": "Github Repo"
     },
-    "tools": {
-        "cursor": "Cursor"
+    "files": {
+      "files": "Files",
+      "new": "New",
+      "open": "Open"
     }
+  },
+  "tools": {
+    "cursor": "Cursor",
+    "div": "Dividing Lines",
+    "mask": "Masks"
+  }
 }

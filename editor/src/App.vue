@@ -12,7 +12,13 @@
             collapsible><!--Set :trigger to customize trigger-->
             <side-menu></side-menu>
         </a-layout-sider>
-        <a-layout-content>
+        <a-layout-content class="subsublayout">
+            <a-layout-header class="top-toolbar">
+
+            </a-layout-header>
+            <a-layout-content>
+                
+            </a-layout-content>
         </a-layout-content>
         <a-layout-sider
             class="sider-right"
@@ -47,10 +53,31 @@
     background-color: white;
     padding: 0;
     padding-top: 2em;
+    z-index: 99;
+    box-shadow: 4px 0 6px -1px rgba(0,0,0,0.1),
+        1px 0 2px -1px rgba(0,0,0,0.1);
 }
 
 .sider-right {
     display: flex;
     background-color: white;
+    z-index: 99;
+    box-shadow: -4px 0 6px -1px rgba(0,0,0,0.1),
+        -1px 0 2px -1px rgba(0,0,0,0.1);
+}
+
+.subsublayout {
+    height: 100%;
+}
+
+.top-toolbar {
+    background-color: white;
+    z-index: 98;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1),
+        0 1px 2px -1px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
 }
 </style>
