@@ -2,22 +2,15 @@ import { createApp } from "vue";
 import { createI18n } from "vue-i18n";
 import App from "./App.vue";
 
+import en_us from "./locales/en_us.json";
+import zh_cn from "./locales/zh_cn.json";
+
 const i18n = createI18n({
-    locale: "jp",
-    fallbackLocale: "en",
+    locale: "zh_cn",
+    fallbackLocale: "en_us",
     messages: {
-        en: {
-            test: "Mantis Editor",
-            increment: "increment",
-        },
-        cn: {
-            test: "Mantis 编辑器",
-            increment: "增加",
-        },
-        jp: {
-            test: "マンティス=エディタ",
-            increment: "インクリメント",
-        }
+        en_us,
+        zh_cn
     }
 })
 
