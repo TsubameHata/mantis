@@ -11,10 +11,12 @@
     "dependencies": {
         "@iconify/json": "^2.2.355",
         "ant-design-vue": "^4.2.6",
+        "konva": "^9.3.20",
         "pinia": "^3.0.3",
         "unplugin-icons": "^22.1.0",
         "vue": "^3.5.17",
-        "vue-i18n": "^11.1.9"
+        "vue-i18n": "^11.1.9",
+        "vue-konva": "^3.2.1"
     },
     "devDependencies": {
         "@vitejs/plugin-vue": "^6.0.0",

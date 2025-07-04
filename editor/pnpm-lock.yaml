@@ -14,6 +14,9 @@ importers:
       ant-design-vue:
         specifier: ^4.2.6
         version: 4.2.6(vue@3.5.17)
+      konva:
+        specifier: ^9.3.20
+        version: 9.3.20
       pinia:
         specifier: ^3.0.3
         version: 3.0.3(vue@3.5.17)
@@ -26,6 +29,9 @@ importers:
       vue-i18n:
         specifier: ^11.1.9
         version: 11.1.9(vue@3.5.17)
+      vue-konva:
+        specifier: ^3.2.1
+        version: 3.2.1(konva@9.3.20)(vue@3.5.17)
     devDependencies:
       '@vitejs/plugin-vue':
         specifier: ^6.0.0
@@ -591,6 +597,9 @@ packages:
   kolorist@1.8.0:
     resolution: {integrity: sha512-Y+60/zizpJ3HRH8DCss+q95yr6145JXZo46OTpFvDZWLfRCE4qChOyk1b26nMaNpfHHgxagk9dXT5OP0Tfe+dQ==}
 
+  konva@9.3.20:
+    resolution: {integrity: sha512-7XPD/YtgfzC8b1c7z0hhY5TF1IO/pBYNa29zMTA2PeBaqI0n5YplUeo4JRuRcljeAF8lWtW65jePZZF7064c8w==}
+
   local-pkg@1.1.1:
     resolution: {integrity: sha512-WunYko2W1NcdfAFpuLUoucsgULmgDBRkdxHxWQ7mK0cQqwPiy8E1enjuRBrhLtZkB5iScJ1XIPdhVEFK8aOLSg==}
     engines: {node: '>=14'}
@@ -844,6 +853,13 @@ packages:
     engines: {node: '>= 16'}
     peerDependencies:
       vue: ^3.0.0
+
+  vue-konva@3.2.1:
+    resolution: {integrity: sha512-gLF+VYnlrBfwtaN3NkgzzEqlj9nyCll80VZv2DdvLUM3cisUsdcRJJuMwGTBJOTebcnn6MB22r33IFd2m+m/ig==}
+    engines: {node: '>= 4.0.0', npm: '>= 3.0.0'}
+    peerDependencies:
+      konva: '>7'
+      vue: ^3
 
   vue-types@3.0.2:
     resolution: {integrity: sha512-IwUC0Aq2zwaXqy74h4WCvFCUtoV0iSWr0snWnE9TnU18S66GAQyqQbRf2qfJtUuiFsBf6qp0MEwdonlwznlcrw==}
@@ -1327,6 +1343,8 @@ snapshots:
 
   kolorist@1.8.0: {}
 
+  konva@9.3.20: {}
+
   local-pkg@1.1.1:
     dependencies:
       mlly: 1.7.4
@@ -1555,6 +1573,11 @@ snapshots:
       '@intlify/core-base': 11.1.9
       '@intlify/shared': 11.1.9
       '@vue/devtools-api': 6.6.4
+      vue: 3.5.17
+
+  vue-konva@3.2.1(konva@9.3.20)(vue@3.5.17):
+    dependencies:
+      konva: 9.3.20
       vue: 3.5.17
 
   vue-types@3.0.2(vue@3.5.17):

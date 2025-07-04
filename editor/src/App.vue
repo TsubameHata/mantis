@@ -14,7 +14,7 @@
         </a-layout-sider>
         <a-layout-content class="subsublayout">
             <a-layout-content class="main">
-                
+                <central-view></central-view>
             </a-layout-content>
             <a-layout-footer class="bottom-toolbar">
                 <bottom-bar></bottom-bar>
@@ -22,7 +22,7 @@
         </a-layout-content>
         <a-layout-sider
             class="sider-right"
-            width="500"></a-layout-sider>
+            width="400"></a-layout-sider>
     </a-layout>
 </a-layout>
 </template>
@@ -74,6 +74,8 @@
 
 .main {
     flex: 1;
+    justify-content: center;
+    align-items: center;
 }
 
 .bottom-toolbar {
