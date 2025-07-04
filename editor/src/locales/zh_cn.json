@@ -1,20 +1,21 @@
 {
-    "menu": {
-        "help": {
-            "help": "帮助",
-            "doc": "文档",
-            "bug": "bug报告",
-            "github": "Github仓库"
-        },
-        "files": {
-            "files": "文件",
-            "new": "新建",
-            "open": "打开"
-        }
+  "menu": {
+    "help": {
+      "help": "帮助",
+      "doc": "文档",
+      "bug": "bug报告",
+      "github": "Github仓库"
     },
-    "tools": {
-        "cursor": "光标",
-        "div": "分割线",
-        "mask": "蒙版"
+    "files": {
+      "files": "文件",
+      "new": "新建",
+      "open": "打开"
     }
+  },
+  "tools": {
+    "cursor": "光标",
+    "div": "分割线",
+    "mask": "蒙版",
+    "margin": "页边距"
+  }
 }

@@ -15,6 +15,7 @@
   "tools": {
     "cursor": "Cursor",
     "div": "Dividing Lines",
-    "mask": "Masks"
+    "mask": "Masks",
+    "margin": "Page Margin"
   }
 }

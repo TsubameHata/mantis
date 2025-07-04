@@ -5,6 +5,7 @@ import { useI18n } from "vue-i18n";
 import SolarCursorLinear from 'virtual:icons/solar/cursor-linear';
 import SolarPenLinear from 'virtual:icons/solar/pen-linear';
 import IconParkDividingLine from 'virtual:icons/icon-park/dividing-line';
+import ProiconsPageMargins from 'virtual:icons/proicons/page-margins';
 
 const { t } = useI18n();
 
@@ -13,6 +14,11 @@ const items = ref<MenuProps["items"]>([
         key: "cursor",
         label: t("tools.cursor"),
         icon: ()=>h(SolarCursorLinear)
+    },
+    {
+        key: "margin",
+        label: t("tools.margin"),
+        icon: ()=>h(ProiconsPageMargins)
     },
     {
         key: "div",
