@@ -13,12 +13,12 @@
             <side-menu></side-menu>
         </a-layout-sider>
         <a-layout-content class="subsublayout">
-            <a-layout-header class="top-toolbar">
-
-            </a-layout-header>
-            <a-layout-content>
+            <a-layout-content class="main">
                 
             </a-layout-content>
+            <a-layout-footer class="bottom-toolbar">
+                <bottom-bar></bottom-bar>
+            </a-layout-footer>
         </a-layout-content>
         <a-layout-sider
             class="sider-right"
@@ -68,13 +68,19 @@
 
 .subsublayout {
     height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
-.top-toolbar {
+.main {
+    flex: 1;
+}
+
+.bottom-toolbar {
     background-color: white;
     z-index: 98;
-    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1),
-        0 1px 2px -1px rgba(0,0,0,0.1);
+    box-shadow: 0 -4px 6px -1px rgba(0,0,0,0.1),
+        0 -1px 2px -1px rgba(0,0,0,0.1);
     display: flex;
     align-items: center;
     justify-content: center;
