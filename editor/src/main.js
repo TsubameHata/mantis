@@ -3,14 +3,20 @@ import { createI18n } from "vue-i18n";
 import App from "./App.vue";
 
 const i18n = createI18n({
-    locale: "cn",
+    locale: "jp",
     fallbackLocale: "en",
     messages: {
         en: {
-            test: "Mantis Editor"
+            test: "Mantis Editor",
+            increment: "increment",
         },
         cn: {
-            test: "Mantis 编辑器"
+            test: "Mantis 编辑器",
+            increment: "增加",
+        },
+        jp: {
+            test: "マンティス=エディタ",
+            increment: "インクリメント",
         }
     }
 })
