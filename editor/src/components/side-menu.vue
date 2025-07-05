@@ -8,6 +8,8 @@ import IconParkDividingLine from 'virtual:icons/icon-park/dividing-line';
 import ProiconsPageMargins from 'virtual:icons/proicons/page-margins';
 import PixelFaceThinking from 'virtual:icons/pixel/face-thinking';
 
+import { useActivatedTool } from "../store/appState";
+
 const { t } = useI18n();
 
 const items = ref<MenuProps["items"]>([
@@ -38,7 +40,12 @@ const items = ref<MenuProps["items"]>([
     }
 ]);
 
-const selectedKeys = ref(["cursor"])
+const activatedTool = useActivatedTool();
+
+const selectedKeys = computed({
+    get: ()=>[activatedTool.activatedTool],
+    set: val=>{activatedTool.setActivatedTool(val[0])}
+});
 </script>
 
 <template>

@@ -11,6 +11,7 @@ def crop_vertical(img: MatLike, begin: int, end: int)->MatLike:
     return img[begin:end+1, :]
 
 def concat_vertical(img1: MatLike, img2: MatLike)->MatLike:
+    # NOTICE: Cannot handle masks.
     height = img1.shape[0] + img2.shape[0]
     width = max(img1.shape[1], img2.shape[1])
     dst = np.ones((height,width,3), dtype=np.uint8)*255
