@@ -3,13 +3,13 @@ import ScoreDisplayer from './ScoreDisplayer/score-displayer.vue';
 </script>
 
 <template>
-    <div class="container">
-        <ScoreDisplayer></ScoreDisplayer>
+    <div id="score_container">
+        <score-displayer></score-displayer>
     </div>
 </template>
 
 <style scoped>
-.container {
+#score_container {
     display: flex;
     justify-content: center;
     align-items: flex-start;

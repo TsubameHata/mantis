@@ -1,12 +1,23 @@
 <script setup lang="ts">
-const width = 1157;
-const height = 1600;
+import { storeToRefs } from "pinia";
+import { useImgGeometry } from "../../store/pageState";
+
+const imgGeometry = useImgGeometry();
+
+const {width,height} = storeToRefs(imgGeometry);
+
+const { zIndex } = defineProps<{
+    zIndex?: number
+}>();
+
+const z = computed(()=>zIndex?zIndex:10);
+const stageStyle = computed(()=>`position:absolute;top:0;left:0;opacity:50%;z-index:${z}`);
 </script>
 
 <template>
 <v-stage
     :config="{width, height}"
-    style="position:absolute;top:0;left:0;opacity:50%;"
+    :style="stageStyle"
     >
     <slot></slot>
 </v-stage>

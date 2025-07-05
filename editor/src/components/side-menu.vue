@@ -9,6 +9,7 @@ import ProiconsPageMargins from 'virtual:icons/proicons/page-margins';
 import PixelFaceThinking from 'virtual:icons/pixel/face-thinking';
 
 import { useActivatedTool } from "../store/appState";
+import { Key } from "ant-design-vue/es/_util/type";
 
 const { t } = useI18n();
 
@@ -43,8 +44,8 @@ const items = ref<MenuProps["items"]>([
 const activatedTool = useActivatedTool();
 
 const selectedKeys = computed({
-    get: ()=>[activatedTool.activatedTool],
-    set: val=>{activatedTool.setActivatedTool(val[0])}
+    get: () => [unref(activatedTool.activatedTool)],
+    set: val => { activatedTool.setActivatedTool(val[0]); }
 });
 </script>
 

@@ -22,7 +22,9 @@
         </a-layout-content>
         <a-layout-sider
             class="sider-right"
-            width="400"></a-layout-sider>
+            width="400">
+            <information></information>
+        </a-layout-sider>
     </a-layout>
 </a-layout>
 </template>
