@@ -4,19 +4,31 @@ import scoreStage from './score-stage.vue';
 import { useZoomLevel } from '../../store/appState';
 import { useActivatedTool } from '../../store/appState';
 
-import { useImgGeometry, useImgSrc } from '../../store/pageState';
+import { useImgGeometry, useImgSrc } from '../../store/documentState';
+import { storeToRefs } from 'pinia';
 
 const zoomLevel = useZoomLevel();
 
-const activatedTool = useActivatedTool();
+const {activatedTool} =storeToRefs(useActivatedTool());
 
 // Placeholder from IMSLP
 const placeholder = "https://cdn.imslp.org/images/thumb/pdfs/75/44210fe8ffe593f14d5a9d65ec8233cb0c904c0b.png";
 
 const imgSrc = useImgSrc();
-imgSrc.setImgSrc(placeholder);
+onMounted(()=>imgSrc.imgSrc = placeholder)
 
 const imgGeometry = useImgGeometry();
+
+const resetZoomRate = (width:number)=>{
+    const container = document.getElementById("score_container");
+    const container_w = container?.offsetWidth;
+    if (container_w) {
+        const imgOffsetWidth = container_w * 0.8;
+        const zoomRatio = imgOffsetWidth / width;
+        const zoomRatioPercent = Math.floor(zoomRatio*100);
+        zoomLevel.zoomLevelPercent = zoomRatioPercent;
+    };
+};
 
 onMounted(()=>{
     const imgElement = document.getElementById("score_page") as HTMLImageElement | null;
@@ -26,15 +38,11 @@ onMounted(()=>{
         const height = imgElement?.height;
         if(width && height) imgGeometry.setImgGeometry(width, height);
 
-        // Change zoom rate
-        const container = document.getElementById("score_container");
-        const container_w = container?.offsetWidth;
-        if (container_w) {
-            const imgOffsetWidth = container_w * 0.8;
-            const zoomRatio = imgOffsetWidth / width;
-            const zoomRatioPercent = Math.floor(zoomRatio*100);
-            zoomLevel.updateZoomLevelPercent(zoomRatioPercent);
-        }
+        resetZoomRate(width);
+    });
+    window.addEventListener("resize", ()=>{
+        const width = imgElement?.width;
+        if(width) resetZoomRate(width);
     });
 });
 </script>
@@ -42,7 +50,8 @@ onMounted(()=>{
 <template>
 <div class="score_container">
 <margin-stage
-    v-if="activatedTool.activatedTool=='margin'"></margin-stage>
+    v-if="activatedTool=='margin'"
+    ></margin-stage>
 <img class="score_page" id="score_page"
     :src="imgSrc.imgSrc"/>
 </div>

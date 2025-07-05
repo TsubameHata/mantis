@@ -1,16 +1,14 @@
 import { defineStore } from "pinia";
+import { usePositiveNumber } from "./utils";
 
 export const useImgSrc = defineStore('imgSrc', ()=>{
     const imgSrc = ref("");
-    const setImgSrc = (src:string)=>{
-        imgSrc.value = src
-    };
-    return {imgSrc, setImgSrc};
+    return {imgSrc};
 });
 
 export const useImgGeometry = defineStore('imgGeometry', ()=>{
-    const width = ref(0);
-    const height = ref(0);
+    const width = usePositiveNumber(0);
+    const height = usePositiveNumber(0);
     const setImgGeometry = (w:number, h:number)=>{
         width.value = w;
         height.value = h;

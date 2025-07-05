@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
-import { useImgGeometry } from "../../store/pageState";
+import { useImgGeometry } from "../../store/documentState";
 
 const imgGeometry = useImgGeometry();
 

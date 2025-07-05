@@ -45,7 +45,7 @@ const activatedTool = useActivatedTool();
 
 const selectedKeys = computed({
     get: () => [unref(activatedTool.activatedTool)],
-    set: val => { activatedTool.setActivatedTool(val[0]); }
+    set: val => { activatedTool.activatedTool = val[0]; }
 });
 </script>
 
