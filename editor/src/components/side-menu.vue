@@ -6,6 +6,7 @@ import SolarCursorLinear from 'virtual:icons/solar/cursor-linear';
 import SolarPenLinear from 'virtual:icons/solar/pen-linear';
 import IconParkDividingLine from 'virtual:icons/icon-park/dividing-line';
 import ProiconsPageMargins from 'virtual:icons/proicons/page-margins';
+import PixelFaceThinking from 'virtual:icons/pixel/face-thinking';
 
 const { t } = useI18n();
 
@@ -24,6 +25,11 @@ const items = ref<MenuProps["items"]>([
         key: "div",
         label: t("tools.div"),
         icon: ()=>h(IconParkDividingLine)
+    },
+    {
+        key: "detect",
+        label: t("tools.detect"),
+        icon: ()=>h(PixelFaceThinking)
     },
     {
         key: "mask",

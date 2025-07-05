@@ -16,6 +16,7 @@
     "cursor": "Cursor",
     "div": "Dividing Lines",
     "mask": "Masks",
-    "margin": "Page Margin"
+    "margin": "Page Margin",
+    "detect": "Detect Division"
   }
 }

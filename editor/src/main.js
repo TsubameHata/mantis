@@ -13,7 +13,7 @@ const app = createApp(App);
 app.use(VueKonva)
 
 const i18n = createI18n({
-    locale: "zh_cn",
+    locale: "en_us",
     fallbackLocale: "en_us",
     legacy: false,
     messages: {

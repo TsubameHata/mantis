@@ -16,6 +16,7 @@
     "cursor": "光标",
     "div": "分割线",
     "mask": "蒙版",
-    "margin": "页边距"
+    "margin": "页边距",
+    "detect": "检测分割线"
   }
 }
