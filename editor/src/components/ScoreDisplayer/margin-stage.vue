@@ -25,24 +25,6 @@ const right_w = computed({
         right.value = width.value - n
     }
 });
-
-const marginDisplayerConfig = {
-    stroke: "rgba(0,0,0,1)",
-    strokeWidth: 3,
-    points: [0,0],
-    dash: [20,10,3,10],
-    draggable: true
-};
-
-const getVerticalLineConfigCurried = (v: Ref<number>)=>()=>{
-    let config = {...marginDisplayerConfig};
-    config["stroke"] = "rgb(0,255,0)";
-    config["points"] = [v.value, 0, v.value, height.value];
-    return config;
-};
-
-const leftLineConfig = computed(getVerticalLineConfigCurried(left));
-const rightLineConfig = computed(getVerticalLineConfigCurried(right_w));
 </script>
 
 <template>
