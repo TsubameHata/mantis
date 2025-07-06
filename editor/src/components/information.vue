@@ -5,6 +5,7 @@ import { useActivatedTool } from '../store/appState';
 import { storeToRefs } from 'pinia';
 
 const {activatedTool} = storeToRefs(useActivatedTool());
+
 </script>
 
 <template>

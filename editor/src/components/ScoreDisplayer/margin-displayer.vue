@@ -6,6 +6,8 @@ import { useImgGeometry } from '../../store/documentState';
 
 import ScoreLine from "./score-line.vue"
 
+const {zIndex=50} = defineProps<{zIndex?:number}>();
+
 const margin = useMargin();
 const {left, right, top, bottom} = storeToRefs(margin);
 
@@ -28,7 +30,7 @@ const right_w = computed({
 </script>
 
 <template>
-<score-stage>
+<score-stage :z-index="zIndex">
     <v-layer>
         <score-line v-model:height="top"></score-line>
         <score-line v-model:height="bottom_h"></score-line>

@@ -65,10 +65,19 @@ const onDragEnd = computed(()=>{
         }
     };
 })
+
+const mouseEnter = ()=>{document.body.style.cursor="grab"};
+const mouseleave = ()=>{document.body.style.cursor="default"};
+const mouseDown = ()=>{document.body.style.cursor="grabbing"};
 </script>
 
 <template>
-<v-line :config="lineConfig" @dragend="onDragEnd"></v-line>
+<v-line
+    :config="lineConfig" 
+    @mouseenter="mouseEnter"
+    @mouseleave="mouseleave"
+    @mousedown="mouseDown"
+    @dragend="onDragEnd"></v-line>
 </template>
 
 <style scoped>

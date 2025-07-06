@@ -45,13 +45,20 @@ onMounted(()=>{
         if(width) resetZoomRate(width);
     });
 });
+
+const showMarginStage = computed(()=>{
+    return activatedTool.value=="margin" || activatedTool.value=="div" || activatedTool.value=="detect"
+})
 </script>
 
 <template>
 <div class="score_container">
-<margin-stage
-    v-if="activatedTool=='margin'"
-    ></margin-stage>
+<margin-displayer
+    v-if="showMarginStage"
+    :z-index="50"
+    ></margin-displayer>
+<division-displayer
+    v-if="activatedTool=='div'"></division-displayer>
 <img class="score_page" id="score_page"
     :src="imgSrc.imgSrc"/>
 </div>

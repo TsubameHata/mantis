@@ -11,7 +11,7 @@ export const useZoomLevel = defineStore('zoomLevel', ()=>{
 export type tool = "cursor" | "margin" | "div" | "detect" | "mask";
 
 export const useActivatedTool = defineStore('activatedTool', ()=>{
-    const activatedTool = ref<tool>("margin");
+    const activatedTool = ref<tool>("cursor");
     return {activatedTool};
 });
 
@@ -24,3 +24,8 @@ export const useMargin = defineStore("margin", ()=>{
         left,right,top,bottom
     };
 });
+
+export const useDivLines = defineStore("divLines", ()=>{
+    const divLines = reactive<number[]>([])
+    return { divLines }
+})
