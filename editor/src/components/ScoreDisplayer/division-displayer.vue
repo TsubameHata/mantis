@@ -10,7 +10,6 @@ const stageClicked = (e:any)=>{
     const y = Math.floor(e.target.getStage().getPointerPosition().y);
     divLines.push(y);
     divLines.sort((a,b)=>a-b);
-    console.log(divLines)
 }
 </script>
 

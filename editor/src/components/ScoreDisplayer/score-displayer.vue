@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import scoreStage from './score-stage.vue';
-
 import { useZoomLevel } from '../../store/appState';
 import { useActivatedTool } from '../../store/appState';
 

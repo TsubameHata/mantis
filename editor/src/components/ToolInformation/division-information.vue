@@ -5,8 +5,12 @@ import SolarPenLinear from 'virtual:icons/solar/pen-linear';
 import { useDivLines, useMargin } from "../../store/appState";
 import { storeToRefs } from "pinia";
 
+import colors from "../../colors";
+
 const {divLines} = useDivLines();
 const {top,bottom_h} = storeToRefs(useMargin());
+
+const rgb = (c:number[])=>`rgb(${c[0]},${c[1]},${c[2]})`;
 </script>
 
 <template>
@@ -18,7 +22,7 @@ const {top,bottom_h} = storeToRefs(useMargin());
     v-for="(line, index) in divLines">
     <div class="card_content">
         <a-tag
-            color="rgb(255,0,0)">{{ index }}</a-tag>
+            :color="rgb(colors[index])">{{ index }}</a-tag>
         <a-input-number
             :min="top"
             :max="bottom_h"

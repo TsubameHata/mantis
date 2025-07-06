@@ -2,7 +2,8 @@
     "compilerOptions": {
         "strict": true,
         "forceConsistentCasingInFileNames": true,
-        "lib": ["ES2020", "DOM", "DOM.Iterable"]
+        "lib": ["ES2020", "DOM", "DOM.Iterable"],
+        "resolveJsonModule": true
     },
     "include": ["src/**/*.ts", 
         "src/**/*.d.ts", 

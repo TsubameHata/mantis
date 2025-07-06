@@ -40,5 +40,12 @@ def preview_colors(colors: Iterable[Color], columns=8, block="    ") -> None:
             print()
     print()
 
+def save_color_table_to_tsm(colors: Iterable[Color], path: str)->None:
+    with open(path, "w") as f:
+        f.write("export default [")
+        cstr = ",".join(list(map(lambda c: f"[{c[0]},{c[1]},{c[2]}]", colors)))
+        f.write(cstr)
+        f.write("]")
+
 if __name__=="__main__":
-    preview_colors(color_table)
+    save_color_table_to_tsm(color_table, "./colors.ts")
