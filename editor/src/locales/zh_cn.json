@@ -18,5 +18,11 @@
     "mask": "蒙版",
     "margin": "页边距",
     "detect": "检测分割线"
+  },
+  "margin": {
+    "top": "上",
+    "bottom": "下",
+    "left": "左",
+    "right": "右"
   }
 }

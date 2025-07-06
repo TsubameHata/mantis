@@ -18,5 +18,11 @@
     "mask": "Masks",
     "margin": "Page Margin",
     "detect": "Detect Division"
+  },
+  "margin": {
+    "top": "Top",
+    "bottom": "Bottom",
+    "left": "Left",
+    "right": "Right"
   }
 }

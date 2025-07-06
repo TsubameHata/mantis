@@ -11,25 +11,25 @@ const {left, right, top, bottom} = storeToRefs(margin);
 <template>
 <div class="margin_form">
     <div class="input_container">
-        <div class="input_label">Top</div>
+        <div class="input_label">{{ $t("margin.top") }}</div>
         <a-input-number
             v-model:value="top"
             :min="0"></a-input-number>
     </div>
     <div class="input_container">
-        <div class="input_label">Bottom</div>
+        <div class="input_label">{{ $t("margin.bottom") }}</div>
         <a-input-number
             v-model:value="bottom"
             :min="0"></a-input-number>
     </div>
     <div class="input_container">
-        <div class="input_label">Left</div>
+        <div class="input_label">{{ $t("margin.left") }}</div>
         <a-input-number
             v-model:value="left"
             :min="0"></a-input-number>
     </div>
     <div class="input_container">
-        <div class="input_label">Right</div>
+        <div class="input_label">{{ $t("margin.right") }}</div>
         <a-input-number
             v-model:value="right"
             :min="0"></a-input-number>

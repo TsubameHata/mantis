@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import marginInformation from './ToolInformation/margin-information.vue';
+import divisionInformation from './ToolInformation/division-information.vue';
 
 import { useActivatedTool } from '../store/appState';
 import { storeToRefs } from 'pinia';
@@ -12,6 +13,8 @@ const {activatedTool} = storeToRefs(useActivatedTool());
 <div id="information_container">
     <margin-information
         v-if="activatedTool=='margin'"></margin-information>
+    <division-information
+        v-if="activatedTool=='div'"></division-information>
 </div>
 </template>
 
@@ -20,5 +23,12 @@ const {activatedTool} = storeToRefs(useActivatedTool());
     width: 100%;
     height: 100%;
     padding: 2em;
+    overflow-y: auto;
+}
+</style>
+
+<style>
+.ant-layout-sider-children {
+    width: 100%;
 }
 </style>

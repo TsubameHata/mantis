@@ -1,6 +1,8 @@
-import { defineStore } from "pinia";
+import { defineStore, storeToRefs } from "pinia";
 
 import { usePositiveNumber } from "./utils";
+
+import { useImgGeometry } from "./documentState";
 
 export const useZoomLevel = defineStore('zoomLevel', ()=>{
     const zoomLevelPercent = ref(100);
@@ -20,8 +22,24 @@ export const useMargin = defineStore("margin", ()=>{
     const right = usePositiveNumber(5);
     const top = usePositiveNumber(5);
     const bottom = usePositiveNumber(5);
+
+    const {height,width} = storeToRefs(useImgGeometry());
+
+    const bottom_h = computed({
+        get: ()=>height.value-bottom.value,
+        set: (n:number)=>{
+            bottom.value = height.value - n
+        }
+    });
+
+    const right_w = computed({
+        get: ()=>width.value-right.value,
+        set: (n:number)=>{
+            right.value = width.value - n
+        }
+    });
     return {
-        left,right,top,bottom
+        left,right,top,bottom,bottom_h,right_w
     };
 });
 
