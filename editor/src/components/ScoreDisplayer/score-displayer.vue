@@ -57,6 +57,9 @@ const showMarginStage = computed(()=>{
     ></margin-displayer>
 <division-displayer
     v-if="activatedTool=='div'"></division-displayer>
+<mask-displayer
+    :z-index="52"
+    v-if="activatedTool=='mask'"></mask-displayer>
 <img class="score_page" id="score_page"
     :src="imgSrc.imgSrc"/>
 </div>

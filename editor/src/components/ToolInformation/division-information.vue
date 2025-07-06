@@ -11,18 +11,36 @@ const {divLines} = useDivLines();
 const {top,bottom_h} = storeToRefs(useMargin());
 
 const rgb = (c:number[])=>`rgb(${c[0]},${c[1]},${c[2]})`;
+
+const zero = ref(0);
 </script>
 
 <template>
 <div class="division_information_container">
+<a-card
+    hoverable
+    size="small"
+    style="width:80%">
+        <div class="card_content">
+        <a-tag
+            :color="rgb(colors[0])">0</a-tag>
+        <a-input-number
+            :disabled="true"
+            v-model:value="zero"></a-input-number>
+        </div>
+    <template #actions>
+        <SolarPenLinear></SolarPenLinear>
+    </template>
+</a-card>
 <a-card 
     hoverable
     size="small" 
     style="width:80%" 
     v-for="(line, index) in divLines">
+
     <div class="card_content">
         <a-tag
-            :color="rgb(colors[index])">{{ index }}</a-tag>
+            :color="rgb(colors[index+1])">{{ index+1 }}</a-tag>
         <a-input-number
             :min="top"
             :max="bottom_h"

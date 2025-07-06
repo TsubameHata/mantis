@@ -7,6 +7,9 @@ import { storeToRefs } from 'pinia';
 
 const {activatedTool} = storeToRefs(useActivatedTool());
 
+const showDivInformation = computed(()=>{
+    return activatedTool.value=='div' || activatedTool.value=='mask'
+})
 </script>
 
 <template>
@@ -14,7 +17,7 @@ const {activatedTool} = storeToRefs(useActivatedTool());
     <margin-information
         v-if="activatedTool=='margin'"></margin-information>
     <division-information
-        v-if="activatedTool=='div'"></division-information>
+        v-if="showDivInformation"></division-information>
 </div>
 </template>
 
