@@ -2,7 +2,14 @@
 import { storeToRefs } from "pinia";
 import { useImgGeometry } from "../../store/documentState";
 
-const emit = defineEmits<{click:[e:MouseEvent]}>();
+const emit = defineEmits<{
+    click:[e:MouseEvent],
+    mousemove:[e:MouseEvent],
+    mousedown:[e:MouseEvent],
+    mouseup:[e:MouseEvent],
+    mouseenter:[e:MouseEvent],
+    mouseleave:[e:MouseEvent]
+}>();
 
 const imgGeometry = useImgGeometry();
 
@@ -20,6 +27,11 @@ const stageStyle =
     :config="{width, height}"
     :style="stageStyle"
     @click="(e: MouseEvent) => { emit('click', e) }"
+    @mousemove="(e: MouseEvent) => { emit('mousemove', e) }"
+    @mousedown="(e: MouseEvent) => {emit('mousedown', e)}"
+    @mouseup="(e: MouseEvent) => {emit('mouseup', e)}"
+    @mouseenter="(e: MouseEvent) => {emit('mouseenter', e)}"
+    @mouseleave="(e: MouseEvent) => {emit('mouseleave', e)}"
     >
     <slot></slot>
 </v-stage>

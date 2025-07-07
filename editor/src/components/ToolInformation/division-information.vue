@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import MaterialSymbolsDeleteOutline from "virtual:icons/material-symbols/delete-outline";
-import SolarPenLinear from 'virtual:icons/solar/pen-linear';
 
-import { useDivLines, useMargin } from "../../store/appState";
+import { useActivatedTool, useDivLines, useMargin, useMaskBrush } from "../../store/appState";
 import { storeToRefs } from "pinia";
 
 import colors from "../../colors";
@@ -10,9 +9,11 @@ import colors from "../../colors";
 const {divLines} = useDivLines();
 const {top,bottom_h} = storeToRefs(useMargin());
 
+const { activatedTool } = storeToRefs(useActivatedTool());
+
 const rgb = (c:number[])=>`rgb(${c[0]},${c[1]},${c[2]})`;
 
-const zero = ref(0);
+const { brushRadius } = storeToRefs(useMaskBrush());
 </script>
 
 <template>
@@ -20,23 +21,44 @@ const zero = ref(0);
 <a-card
     hoverable
     size="small"
-    style="width:80%">
-        <div class="card_content">
-        <a-tag
-            :color="rgb(colors[0])">0</a-tag>
-        <a-input-number
-            :disabled="true"
-            v-model:value="zero"></a-input-number>
+    style="width:80%"
+    v-if="activatedTool=='mask'">
+    <div class="slider_card card_content">
+        <div>Brush Radius</div>
+        <div class="slider_container">
+            <div class="slider_wrap">
+                <a-slider v-model:value="brushRadius"
+                    :min="2" :max="100"></a-slider>
+            </div>
+            <div class="input_wrap">
+                <a-input-number
+                    v-model:value="brushRadius"
+                    :min="2" :max="100"></a-input-number>
+            </div>
+            
         </div>
+    </div>
+</a-card>
+<a-card
+    hoverable
+    size="small"
+    style="width:80%">
+    <div class="card_content">
+    <a-tag
+        :color="rgb(colors[0])">0</a-tag>
+    <a-input-number
+        :disabled="true"
+        :value="0"></a-input-number>
+    </div>
     <template #actions>
-        <SolarPenLinear></SolarPenLinear>
+        <toggle-pen :index="0"></toggle-pen>
     </template>
 </a-card>
 <a-card 
     hoverable
     size="small" 
     style="width:80%" 
-    v-for="(line, index) in divLines">
+    v-for="(_, index) in divLines">
 
     <div class="card_content">
         <a-tag
@@ -48,7 +70,7 @@ const zero = ref(0);
     </div>
 
     <template #actions>
-        <SolarPenLinear></SolarPenLinear>
+        <toggle-pen :index="index+1"></toggle-pen>
         <MaterialSymbolsDeleteOutline
             @click="divLines.splice(index, 1)"></MaterialSymbolsDeleteOutline>
     </template>
@@ -72,5 +94,24 @@ const zero = ref(0);
 }
 .card_content>* {
     margin: auto;
+}
+.slider_card {
+    flex-direction: column;
+    text-align: start;
+}
+.slider_container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+.slider_wrap {
+    padding: 0 0.5em;
+    width: 50%;
+}
+.input_wrap {
+    padding: 0 0.5em;
+    width: 40%;
 }
 </style>

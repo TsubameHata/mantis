@@ -44,6 +44,27 @@ export const useMargin = defineStore("margin", ()=>{
 });
 
 export const useDivLines = defineStore("divLines", ()=>{
-    const divLines = reactive<number[]>([])
-    return { divLines }
-})
+    const divLines = reactive<number[]>([]);
+    const {top, bottom_h} = storeToRefs(useMargin());
+    const divBlocks = computed(()=>{
+        if(divLines[0]==undefined) {
+            return [[top.value, bottom_h.value]];
+        };
+        let blocks: number[][] = [];
+        blocks.push([top.value, divLines[0]]);
+        for(let i=0; i<divLines.length-1; i++){
+            blocks.push([divLines[i], divLines[i+1]]);
+        };
+        blocks.push([divLines[divLines.length-1], bottom_h.value]);
+        return blocks;
+    });
+    return { divLines,divBlocks }
+});
+
+export const useMaskBrush = defineStore("maskBrush", ()=>{
+    const brushActivated = ref(false);
+    const brushRadius = ref(20);
+    const nowEditing = ref(0);
+
+    return {brushActivated, brushRadius, nowEditing};
+});
