@@ -24,5 +24,8 @@
     "bottom": "Bottom",
     "left": "Left",
     "right": "Right"
+  },
+  "div": {
+    "brush_r": "Brush Radius"
   }
 }

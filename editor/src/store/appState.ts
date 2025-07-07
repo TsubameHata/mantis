@@ -68,3 +68,13 @@ export const useMaskBrush = defineStore("maskBrush", ()=>{
 
     return {brushActivated, brushRadius, nowEditing};
 });
+
+export const useMaskLines = defineStore("maskLines", ()=>{
+    const maskLines = reactive<{
+        index: number,
+        points: number[],
+        width: number
+    }[]>([]);
+    
+    return {maskLines}
+})

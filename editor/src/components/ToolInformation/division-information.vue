@@ -24,7 +24,7 @@ const { brushRadius } = storeToRefs(useMaskBrush());
     style="width:80%"
     v-if="activatedTool=='mask'">
     <div class="slider_card card_content">
-        <div>Brush Radius</div>
+        <div>{{$t("div.brush_r")}}</div>
         <div class="slider_container">
             <div class="slider_wrap">
                 <a-slider v-model:value="brushRadius"
