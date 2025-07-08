@@ -105,8 +105,10 @@ def import_mask(session_id: int,
 def process_masks(session_id: int, 
                   pages: (bool|int|Iterable[int]) = True,
                   output_img_size=(1080,1920),
-                  output_inner_height=720,
                   shrink_y_overflow=True) -> Iterable[int]:
+    # TODO: Calculate it dynamically
+    output_inner_height = 700
+    
     all = False
     pages_id: Iterable[int] = []
     
