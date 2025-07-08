@@ -27,6 +27,22 @@ def create_session(pdfname: str) -> int:
         assert id!=None
         return id
 
+def remove_session(session_id: int) -> None:
+    with Session(engine) as s:
+        s.exec(
+            delete(models.Session).where(models.Session.id==session_id)
+        )
+        s.exec(
+            delete(models.Page).where(models.Page.session_id==session_id)
+        )
+        s.exec(
+            delete(models.Mask).where(models.Mask.session_id==session_id)
+        )
+        s.exec(
+            delete(models.Result).where(models.Result.session_id==session_id)
+        )
+        s.commit()
+
 def import_pdf(session_id: int, pdf_stream: IO) -> None:
     pdf = load_pdf(pdf_stream)
     imgs = pdf2imgs(pdf)
@@ -105,7 +121,8 @@ def import_mask(session_id: int,
 def process_masks(session_id: int, 
                   pages: (bool|int|Iterable[int]) = True,
                   output_img_size=(1080,1920),
-                  shrink_y_overflow=True) -> Iterable[int]:
+                  shrink_x_overflow=True,
+                  shrink_y_overflow=False) -> Iterable[int]:
     # TODO: Calculate it dynamically
     output_inner_height = 700
     
@@ -170,6 +187,7 @@ def process_masks(session_id: int,
                     border_height,
                     output_img_size,
                     output_inner_height,
+                    shrink_x_overflow=shrink_x_overflow,
                     shrink_y_overflow=shrink_y_overflow,
                 )
                 out_bytes = cv2.imencode(".png", out)[1].tobytes()

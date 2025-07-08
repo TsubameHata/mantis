@@ -37,6 +37,7 @@ def resize_and_paste(img: MatLike,
                      output_inner_height: int,
                      output_background_color: Color = (255,255,255),
                      shrink_y_overflow = False,
+                     shrink_x_overflow = False,
                      background_color = BACKGROUND_COLOR)->MatLike:
     """Resize the image and paste it into a new image of specified size.
     Though the output_inner_height is specified in int, it is greatly recommended to calculate it based on the aspect ratio of the area."""
@@ -52,12 +53,19 @@ def resize_and_paste(img: MatLike,
     max_height_from_center = max(upper, lower)
 
     y_overflow_to_be_handled = False
+    x_overflow_to_be_handled = False
 
     if out_height <= 2*k*max_height_from_center:
         if shrink_y_overflow:
             k = out_height / (origin_height + 2)
         else:
             y_overflow_to_be_handled = True
+
+    if output_img_size[1] <= k*img.shape[1]:
+        if shrink_x_overflow:
+            k = output_img_size[1] / (img.shape[1]+2)
+        else: 
+            x_overflow_to_be_handled = True
 
     img[get_mask_indicies(img, background_color)] = output_background_color
     img_cropped = img[border_height[0]:border_height[1], :]
@@ -67,8 +75,7 @@ def resize_and_paste(img: MatLike,
         img_cropped = img_cropped[delta_height:img_cropped.shape[0]-delta_height, :]
         upper = img_cropped.shape[0]//2
 
-    # Hide the overflowed width regardless of flag shrink_y_overflow
-    if output_img_size[1] <= k*img_cropped.shape[1]:
+    if x_overflow_to_be_handled:
         delta_width = int(((k*img_cropped.shape[1] - output_img_size[1])/k + 4)//2)
         img_cropped = img_cropped[:, delta_width:img_cropped.shape[1]-delta_width]
     
