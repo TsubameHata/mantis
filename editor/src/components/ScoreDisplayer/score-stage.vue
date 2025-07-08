@@ -20,6 +20,12 @@ const { zIndex=10 } = defineProps<{
 }>();
 const stageStyle = 
     computed(()=>`position:absolute;top:0;left:0;opacity:50%;z-index:${zIndex}`);
+
+const stageRef = ref()
+
+const getImgURI = ()=>stageRef.value.getNode().toDataURL();
+defineExpose({getImgURI});
+
 </script>
 
 <template>
@@ -32,6 +38,7 @@ const stageStyle =
     @mouseup="(e: MouseEvent) => {emit('mouseup', e)}"
     @mouseenter="(e: MouseEvent) => {emit('mouseenter', e)}"
     @mouseleave="(e: MouseEvent) => {emit('mouseleave', e)}"
+    ref="stageRef"
     >
     <slot></slot>
 </v-stage>

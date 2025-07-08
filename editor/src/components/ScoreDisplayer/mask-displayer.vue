@@ -4,6 +4,7 @@ import { useDivLines, useMargin, useMaskBrush, useMaskLines } from '../../store/
 import scoreStage from './score-stage.vue';
 
 import colors from "../../colors";
+import { VNodeRef } from 'vue';
 const rgb = (c:number[])=>`rgb(${c[0]},${c[1]},${c[2]})`;
 
 const {zIndex=52} = defineProps<{zIndex?:number}>();
@@ -28,6 +29,7 @@ const brushColor = computed(()=>{
     return rgb(colors[nowEditing.value]);
 });
 const brushInStage = ref(false);
+
 const showBrush = computed(()=>brushActivated.value&&brushInStage.value);
 
 const pointerPos = reactive({x:0,y:0});
@@ -35,6 +37,8 @@ const pointerDown = ref(false);
 
 const points = reactive<{value:number[]}>({value:[]});
 const { maskLines } = storeToRefs(useMaskLines());
+
+const stageRef = ref<VNodeRef | null>(null);
 
 const mouseMove = (e:any)=>{
     const newPos = e.target.getStage().getPointerPosition()
@@ -55,6 +59,11 @@ const mouseUp = ()=>{
         width: brushRadius.value
     });
     points.value.splice(0, points.value.length);
+
+    if(true){
+        console.log(stageRef.value.getImgURI());
+        console.log(divBlocks)
+    }
 };
 
 const brushConfig = computed(()=>{
@@ -76,7 +85,7 @@ const getOneLineConfig = (index:number, points:number[], radius:number)=>{
         lineJoin: "round",
         strokeWidth: radius*2
     };
-}
+};
 
 const maskLinesConfig = computed(()=>{
     let config = maskLines.value.map(maskLine=>{
@@ -87,16 +96,12 @@ const maskLinesConfig = computed(()=>{
         );
     });
     return config;
-})
+});
 </script>
 
 <template>
 <score-stage :z-index="zIndex"
-    @mousemove="mouseMove"
-    @mouseup="mouseUp"
-    @mousedown="pointerDown = true"
-    @mouseenter="brushInStage = true"
-    @mouseleave="brushInStage = false">
+    ref="stageRef">
     <v-layer>
         <v-rect v-for="config in rectConfigs" :config="config"></v-rect>
     </v-layer>
@@ -104,6 +109,13 @@ const maskLinesConfig = computed(()=>{
         <v-line v-for="config in maskLinesConfig" :config="config"></v-line>
         <v-line :config="getOneLineConfig(nowEditing, points.value, brushRadius)"></v-line>
     </v-layer>
+</score-stage>
+<score-stage :z-index="zIndex+1"
+    @mousemove="mouseMove"
+    @mouseup="mouseUp"
+    @mousedown="pointerDown = true"
+    @mouseenter="brushInStage = true"
+    @mouseleave="brushInStage = false">
     <v-layer>
         <v-circle
             v-if="showBrush"

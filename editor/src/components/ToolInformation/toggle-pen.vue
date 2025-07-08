@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import SolarPenLinear from 'virtual:icons/solar/pen-linear';
-import { useMaskBrush } from '../../store/appState';
+import { useActivatedTool, useMaskBrush } from '../../store/appState';
 
 const {index} = defineProps<{
     index: number
 }>();
 
+const { activatedTool } = storeToRefs(useActivatedTool());
 const { brushActivated, nowEditing } = storeToRefs(useMaskBrush());
 
 const activated = computed(()=>{
@@ -26,6 +27,7 @@ const onClick = ()=>{
     if(activated.value){
         brushActivated.value = false;
     } else {
+        activatedTool.value = "mask"
         brushActivated.value = true;
         nowEditing.value = index;
     }
