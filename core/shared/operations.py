@@ -4,6 +4,7 @@ import re
 from turtle import mode
 from typing import IO
 import cv2
+from cv2.typing import MatLike
 from sqlmodel import Session,select,delete
 from sqlalchemy.orm import selectinload
 import json
@@ -13,6 +14,7 @@ from ..img.pdf2img import load_pdf,pdf2imgs
 from ..img.mask import remove_background,get_border_height,resize_and_paste
 from ..img.page_utils import load_img,crop_horizontal
 from ..img.utils import save_imgs
+from ..analysis.gaussian_conv import split_probability,find_peaks
 
 def create_session(pdfname: str) -> int:
     new_session = models.Session(name=pdfname)
@@ -99,6 +101,23 @@ def get_pages(session_id: int,
                                              models.Page.id.in_(pages_id))
             )
         return map(lambda x:x.content, sorted(results, key=lambda x: x.index))
+
+def gaussian_conv(session_id: int, 
+                 page: int,
+                 MIN_PEAK_PROMINENCE=0.03,
+                 MIN_PEAK_DISTANCE=20) -> Iterable[int]:
+    img: MatLike
+    with Session(engine) as s:
+        img_bytes = s.exec(
+            select(models.Page).where(
+                models.Page.session_id==session_id,
+                models.Page.id==page
+            )
+        ).first().content
+        img = load_img(io.BytesIO(img_bytes))
+    probability = split_probability(img)
+    peaks = find_peaks(probability, MIN_PEAK_PROMINENCE, MIN_PEAK_DISTANCE)
+    return peaks
 
 def import_mask(session_id: int, 
                 page_id: int, 
