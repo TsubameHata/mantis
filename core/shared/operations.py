@@ -1,14 +1,13 @@
 from collections.abc import Iterable
 import io
-import re
-from turtle import mode
 from typing import IO
 import cv2
 from cv2.typing import MatLike
-from sqlmodel import Session,select,delete
+from sqlmodel import Session,select,delete,update
 from sqlalchemy.orm import selectinload
 import json
 
+import core.store
 from ..store import models,engine
 from ..img.pdf2img import load_pdf,pdf2imgs
 from ..img.mask import remove_background,get_border_height,resize_and_paste
@@ -57,6 +56,10 @@ def import_pdf(session_id: int, pdf_stream: IO) -> None:
         )
     with Session(engine) as s:
         s.add_all(pages)
+        s.exec(
+            update(models.Session).where(models.Session.id==session_id)
+                .values(page_count=len(pages))
+        )
         s.commit()
 
 # For testing purposes only.
@@ -138,7 +141,7 @@ def import_mask(session_id: int,
         s.commit()
 
 def process_masks(session_id: int, 
-                  pages: (bool|int|Iterable[int]) = True,
+                  pages: (bool|int|Iterable[int]|None) = True,
                   output_img_size=(1080,1920),
                   shrink_x_overflow=True,
                   shrink_y_overflow=False) -> Iterable[int]:
@@ -228,6 +231,35 @@ def process_masks(session_id: int,
             return_ids.append(r.id)
 
         return return_ids
+
+def get_results(session_id: int, 
+                pages: (bool|int|Iterable[int]) = True) -> Iterable[bytes]:
+    all = False
+    pages_id: Iterable[int] = []
+    
+    match pages:
+        case False:
+            pass
+        case True:
+            all=True
+        case int():
+            pages_id = (pages,)
+        case _:
+            pages_id = pages
+
+    with Session(engine) as s:
+        sel = select(models.Result)
+        if all:
+            results = s.exec(
+                sel.where(models.Result.session_id==session_id)
+            )
+        else:
+            results = s.exec(
+                sel.where(models.Result.session_id==session_id,
+                                             models.Result.page_id.in_(pages_id))
+            )
+        results = sorted(results, key=lambda x: (x.page_id, x.split_index))
+        return map(lambda x: x.content, results)
 
 def save_results(session_id: int,
                 pages: (bool|int|Iterable[int]) = True) -> Iterable[io.BytesIO]:

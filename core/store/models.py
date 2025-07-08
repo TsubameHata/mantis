@@ -6,6 +6,7 @@ class Session(SQLModel, table=True):
     id: int|None = Field(default=None, primary_key=True)
     name: str = Field(unique=True)
     created_at: int = Field(default_factory=lambda: int(datetime.datetime.now().timestamp()))
+    page_count: int|None = Field(nullable=True)
 
     pages: list["Page"]|None = Relationship(back_populates="session")
     masks: list["Mask"]|None = Relationship(back_populates="session")
