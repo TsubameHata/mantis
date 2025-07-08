@@ -1,6 +1,11 @@
+from typing import IO
 import numpy as np
 import cv2
 from cv2.typing import MatLike
+
+def load_img(stream: IO) -> MatLike:
+    img = cv2.imdecode(np.frombuffer(stream.read(), np.uint8), cv2.IMREAD_COLOR)
+    return img
 
 def crop_horizontal(img: MatLike, begin: int, end: int)->MatLike:
     return img[:,begin:end+1]

@@ -30,6 +30,7 @@ sqlite_url = f"sqlite:///{DB_DIR}"
 engine = create_engine(sqlite_url)
 SQLModel.metadata.create_all(engine)
 
+# for testing purpose
 if __name__=="__main__":
     session = Session(engine)
     test = models.Session(name=str(uuid.uuid1()))

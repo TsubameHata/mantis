@@ -67,10 +67,14 @@ def resize_and_paste(img: MatLike,
         img_cropped = img_cropped[delta_height:img_cropped.shape[0]-delta_height, :]
         upper = img_cropped.shape[0]//2
 
+    cv2.imwrite("cropped.png", img_cropped)  # For debugging purposes.
+
     # Hide the overflowed width regardless of flag shrink_y_overflow
     if output_img_size[1] <= k*img_cropped.shape[1]:
         delta_width = int(((k*img_cropped.shape[1] - output_img_size[1])/k + 4)//2)
         img_cropped = img_cropped[:, delta_width:img_cropped.shape[1]-delta_width]
+    
+    cv2.imwrite("cropped_.png", img_cropped)  # For debugging purposes.
 
     resized = cv2.resize(img_cropped, dsize=(int(k*img_cropped.shape[1]), int(k*img_cropped.shape[0])), interpolation=cv2.INTER_LINEAR)
 
@@ -83,11 +87,4 @@ def resize_and_paste(img: MatLike,
 
     out[begin_height:begin_height+resized.shape[0], begin_width:begin_width+resized.shape[1]] = resized
     
-    return out
-
-def test(img: MatLike, mask:MatLike, color: Color, 
-         inner_height:tuple[int, int], output_img_size = (1920,1080), output_inner_height = 864, shrink_y_overflow = False)->MatLike:
-    rb = remove_background(img, mask, color)
-    border_height = get_border_height(rb)
-    out = resize_and_paste(rb, inner_height, border_height, output_img_size, output_inner_height, shrink_y_overflow=shrink_y_overflow)
     return out
