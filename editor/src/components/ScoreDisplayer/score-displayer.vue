@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { effect } from 'vue';
 import { useZoomLevel } from '../../store/appState';
 import { useActivatedTool } from '../../store/appState';
 
@@ -9,11 +10,7 @@ const zoomLevel = useZoomLevel();
 
 const {activatedTool} =storeToRefs(useActivatedTool());
 
-// Placeholder from IMSLP
-const placeholder = "https://cdn.imslp.org/images/thumb/pdfs/75/44210fe8ffe593f14d5a9d65ec8233cb0c904c0b.png";
-
 const imgSrc = useImgSrc();
-onMounted(()=>imgSrc.imgSrc = placeholder)
 
 const imgGeometry = useImgGeometry();
 
@@ -30,19 +27,30 @@ const resetZoomRate = (width:number)=>{
 
 onMounted(()=>{
     const imgElement = document.getElementById("score_page") as HTMLImageElement | null;
-    imgElement?.addEventListener("load", ()=>{
+    const initImg = ()=>{
+        if(!imgElement) return;
+
         // Cast img geometry to store
-        const width = imgElement?.width;
-        const height = imgElement?.height;
+        const width = imgElement.width;
+        const height = imgElement.height;
         if(width && height) imgGeometry.setImgGeometry(width, height);
+        console.log(width,height)
 
         resetZoomRate(width);
-    });
+    };
+    imgElement?.addEventListener("load", initImg);
+
     window.addEventListener("resize", ()=>{
         const width = imgElement?.width;
         if(width) resetZoomRate(width);
     });
 });
+
+const width = storeToRefs(imgGeometry).width
+
+effect(()=>{
+    resetZoomRate(width.value)
+})
 
 const showMarginStage = computed(()=>{
     return activatedTool.value=="margin" || activatedTool.value=="div" || activatedTool.value=="detect"

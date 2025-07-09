@@ -8,6 +8,7 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from sqlmodel.orm import session
 import core.shared.operations as op
+import time
 
 import core.store
 
@@ -15,7 +16,11 @@ app = FastAPI()
 
 @app.post("/session/create", status_code=201)
 def create_session(pdfname: str = Form(...)) -> int:
-    session_id = op.create_session(pdfname)
+    session_id: int
+    try:
+        session_id = op.create_session(pdfname)
+    except Exception as e:
+        session_id = op.create_session(str(int(time.time()))+pdfname)
     return session_id
 
 @app.delete("/session/{session_id}", status_code=204)
@@ -25,12 +30,13 @@ def remove_session(session_id: int) -> None:
 @app.post("/session/{session_id}/pdf", status_code=201)
 async def import_pdf(session_id: int, pdf:UploadFile = File(...)) -> None:
     pdf = await pdf.read()
-    op.import_pdf(session_id, BytesIO(pdf))
+    return op.import_pdf(session_id, BytesIO(pdf))
 
 @app.get("/session/{session_id}/page/{page_index}")
 def get_page(session_id: int,
               page_index: int) -> StreamingResponse:
-    return StreamingResponse(BytesIO(next(op.get_pages(session_id, page_index))), media_type="image/png")
+    pages = list(op.get_pages(session_id, page_index))
+    return StreamingResponse(BytesIO(pages[0]), media_type="image/png")
 
 @app.get("/session/{session_id}/gaussian_conv/{page_index}")
 def get_gaussian_conv(session_id: int,

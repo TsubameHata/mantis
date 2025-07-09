@@ -44,7 +44,7 @@ def remove_session(session_id: int) -> None:
         )
         s.commit()
 
-def import_pdf(session_id: int, pdf_stream: IO) -> None:
+def import_pdf(session_id: int, pdf_stream: IO) -> int:
     pdf = load_pdf(pdf_stream)
     imgs = pdf2imgs(pdf)
     pages = []
@@ -61,7 +61,8 @@ def import_pdf(session_id: int, pdf_stream: IO) -> None:
                 .values(page_count=len(pages))
         )
         s.commit()
-
+    return len(pages)
+        
 # For testing purposes only.
 def import_page(session_id: int, page_index: int, path: str)->None:
     """Import a page from the specified path to the session."""
@@ -90,7 +91,7 @@ def get_pages(session_id: int,
             pages_id = (pages,)
         case _:
             pages_id = pages
-
+    
     with Session(engine) as s:
         sel = select(models.Page)
         results: Iterable[models.Page]
@@ -101,7 +102,7 @@ def get_pages(session_id: int,
         else:
             results = s.exec(
                 sel.where(models.Page.session_id==session_id,
-                                             models.Page.id.in_(pages_id))
+                                             models.Page.index.in_(pages_id))
             )
         return map(lambda x:x.content, sorted(results, key=lambda x: x.index))
 

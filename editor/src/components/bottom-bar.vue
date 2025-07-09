@@ -3,8 +3,13 @@ import GravityUiMagnifier from 'virtual:icons/gravity-ui/magnifier';
 
 import { useZoomLevel } from '../store/appState';
 
-const total = ref(1);
-const current = ref(1);
+import { usePage } from "../store/documentState";
+import { storeToRefs } from 'pinia';
+
+const {
+    pageCount:total,
+    openedPage:current
+} = storeToRefs(usePage());
 
 const zoomLevel = useZoomLevel()
 </script>
