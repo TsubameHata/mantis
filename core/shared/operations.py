@@ -51,7 +51,7 @@ def import_pdf(session_id: int, pdf_stream: IO) -> int:
     for index,i in enumerate(imgs):
         pages.append(
             models.Page(session_id=session_id,
-                        index=index,
+                        index=index+1,
                         content=i.read())
         )
     with Session(engine) as s:
