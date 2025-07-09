@@ -2,7 +2,6 @@
 Provides web api connecting the web editor through FastAPI.
 """
 
-from ast import Bytes
 from io import BytesIO
 from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.responses import StreamingResponse
@@ -14,23 +13,17 @@ import core.store
 
 app = FastAPI()
 
-class CreateSessionRequest(BaseModel):
-    pdfname: str
-
-class CreateSessionResponse(BaseModel):
-    session_id: int
-
-@app.post("/session/create", response_model=CreateSessionResponse, status_code=201)
-def create_session(req: CreateSessionRequest) -> CreateSessionResponse:
-    session_id = op.create_session(req.pdfname)
-    return CreateSessionResponse(session_id=session_id)
+@app.post("/session/create", status_code=201)
+def create_session(pdfname: str = Form(...)) -> int:
+    session_id = op.create_session(pdfname)
+    return session_id
 
 @app.delete("/session/{session_id}", status_code=204)
 def remove_session(session_id: int) -> None:
     op.remove_session(session_id)
 
 @app.post("/session/{session_id}/pdf", status_code=201)
-async def import_pdf(pdf: UploadFile, session_id: int) -> None:
+async def import_pdf(session_id: int, pdf:UploadFile = File(...)) -> None:
     pdf = await pdf.read()
     op.import_pdf(session_id, BytesIO(pdf))
 
@@ -38,15 +31,6 @@ async def import_pdf(pdf: UploadFile, session_id: int) -> None:
 def get_page(session_id: int,
               page_index: int) -> StreamingResponse:
     return StreamingResponse(BytesIO(next(op.get_pages(session_id, page_index))), media_type="image/png")
-
-class GetPagesRequest(BaseModel):
-    page_indices: list[int] | None = True
-    session_id: int
-
-@app.post("/session/{session_id}/pages", response_model=list[bytes])
-def get_pages(req: GetPagesRequest) -> list[bytes]:
-    pages = op.get_pages(req.session_id, req.page_indices)
-    return list(pages)
 
 @app.get("/session/{session_id}/gaussian_conv/{page_index}")
 def get_gaussian_conv(session_id: int,
@@ -59,10 +43,10 @@ def get_gaussian_conv(session_id: int,
 @app.post("/session/{session_id}/mask/{page_index}", status_code=201)
 async def import_mask(session_id: int, 
                       page_index: int, 
-                      color_list: str = Form(), 
-                      margin: str = Form(), 
-                      div_blocks: str = Form(), 
-                      mask: UploadFile = File()) -> None:
+                      color_list: str = Form(...), 
+                      margin: str = Form(...), 
+                      div_blocks: str = Form(...), 
+                      mask: UploadFile = File(...)) -> None:
     content = await mask.read()
     op.import_mask(session_id, page_index, color_list, margin, div_blocks, BytesIO(content))
 

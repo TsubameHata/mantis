@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { MenuProps } from "ant-design-vue"
+import { MenuClickEventHandler, MenuInfo } from "ant-design-vue/es/menu/src/interface";
 import { useI18n } from "vue-i18n"
+import { new_session } from "../requests";
 
 const { t } = useI18n();
 
@@ -38,6 +40,10 @@ const items = ref<MenuProps["items"]>([
         ]
     }
 ]);
+
+const onClick: MenuClickEventHandler = (e:MenuInfo)=>{
+    if(e.key=="new") new_session();
+}
 </script>
 
 <template>
@@ -49,7 +55,8 @@ const items = ref<MenuProps["items"]>([
         mode="horizontal"
         :selectable="false"
         triggerSubMenuAction="hover"
-        :items="items"></a-menu>
+        :items="items"
+        @click="onClick"></a-menu>
 </template>
 
 <style scoped>
