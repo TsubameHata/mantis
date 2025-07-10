@@ -14,17 +14,6 @@ const imgSrc = useImgSrc();
 
 const imgGeometry = useImgGeometry();
 
-const resetZoomRate = (width:number)=>{
-    const container = document.getElementById("score_container");
-    const container_w = container?.offsetWidth;
-    if (container_w) {
-        const imgOffsetWidth = container_w * 0.8;
-        const zoomRatio = imgOffsetWidth / width;
-        const zoomRatioPercent = Math.floor(zoomRatio*100);
-        zoomLevel.zoomLevelPercent = zoomRatioPercent;
-    };
-};
-
 onMounted(()=>{
     const imgElement = document.getElementById("score_page") as HTMLImageElement | null;
     const initImg = ()=>{
@@ -34,23 +23,16 @@ onMounted(()=>{
         const width = imgElement.width;
         const height = imgElement.height;
         if(width && height) imgGeometry.setImgGeometry(width, height);
-        console.log(width,height)
 
-        resetZoomRate(width);
+        zoomLevel.resetZoomRate(width);
     };
     imgElement?.addEventListener("load", initImg);
 
     window.addEventListener("resize", ()=>{
         const width = imgElement?.width;
-        if(width) resetZoomRate(width);
+        if(width) zoomLevel.resetZoomRate(width);
     });
 });
-
-const width = storeToRefs(imgGeometry).width
-
-effect(()=>{
-    resetZoomRate(width.value)
-})
 
 const showMarginStage = computed(()=>{
     return activatedTool.value=="margin" || activatedTool.value=="div" || activatedTool.value=="detect"

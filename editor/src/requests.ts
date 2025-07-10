@@ -2,12 +2,12 @@ import axios from "axios";
 
 import { usePage, useImgSrc } from "./store/documentState";
 import { storeToRefs } from "pinia";
+import { useZoomLevel } from "./store/appState";
 
 export const new_session = ()=>{
     const input = document.createElement("input");
     input.type = "file";
     input.addEventListener("change", async (e: Event)=>{
-
 
         const file = (e.target as HTMLInputElement).files?.[0];
         if(!file) return;

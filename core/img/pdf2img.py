@@ -12,7 +12,7 @@ def load_pdf(pdf: IO)->fitz.Document:
 
 def pdf2imgs(pdf: fitz.Document, 
              pages: ( bool | int | Iterable[int] )=True, 
-             dpi=300) -> Iterable[io.BytesIO]:
+             dpi=180) -> Iterable[io.BytesIO]:
     """Convert PDF to a list of images of selected pages in io.BytesIO in given order. 
     
     If page=True, convert all the pages."""

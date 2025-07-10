@@ -2,8 +2,8 @@ import { defineStore, storeToRefs } from "pinia";
 import { usePositiveNumber } from "./utils";
 
 export const usePage = defineStore("page", ()=>{
-    const pageCount = usePositiveNumber(0);
-    const openedPage = usePositiveNumber(0);
+    const pageCount = usePositiveNumber(1);
+    const openedPage = usePositiveNumber(1);
     return {pageCount, openedPage}
 })
 

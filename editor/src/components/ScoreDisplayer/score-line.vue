@@ -6,7 +6,7 @@ const {
     vertical = false,
     stroke,
     draggable = true,
-    dash=[20,10,3,10]
+    dash = []
 } = defineProps<{
     vertical?: boolean,
     draggable?: boolean,
@@ -38,7 +38,7 @@ const lineConfig = computed(()=>{
     
     let config = {
         stroke: stroke?stroke:(vertical?"rgb(0,255,0)":"rgb(255,0,0)"),
-        strokeWidth: 3,
+        strokeWidth: Math.max(Math.floor(imgWidth.value/200)+1, 3),
         points: [0,0],
         dash,
         draggable,

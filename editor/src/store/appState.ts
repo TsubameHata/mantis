@@ -5,9 +5,19 @@ import { usePositiveNumber } from "./utils";
 import { useImgGeometry } from "./documentState";
 
 export const useZoomLevel = defineStore('zoomLevel', ()=>{
-    const zoomLevelPercent = ref(100);
+    const zoomLevelPercent = ref(30);
     const zoomRatio = computed(()=>zoomLevelPercent.value/100);
-    return {zoomLevelPercent, zoomRatio};
+    const resetZoomRate = (width:number)=>{
+        const container = document.getElementById("score_container");
+        const container_w = container?.offsetWidth;
+        if (container_w) {
+            const imgOffsetWidth = container_w * 0.8;
+            const zoomRatio = imgOffsetWidth / width;
+            const zoomRatioPercent = Math.floor(zoomRatio*100);
+            zoomLevelPercent.value = zoomRatioPercent;
+        };
+    };
+    return {zoomLevelPercent, zoomRatio, resetZoomRate};
 });
 
 export type tool = "cursor" | "margin" | "div" | "detect" | "mask";
