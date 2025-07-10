@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { usePage, useImgSrc } from "./store/documentState";
+import { usePage, useImgSrc, useMasks } from "./store/documentState";
 import { storeToRefs } from "pinia";
 import { useZoomLevel } from "./store/appState";
 
@@ -24,6 +24,8 @@ export const new_session = ()=>{
             const pageCount = import_pdf_res.data;
             storeToRefs(usePage()).pageCount.value = pageCount;
             storeToRefs(useImgSrc()).pageURLPrefix.value = `/api/session/${session_id}/page/`
+
+            storeToRefs(useMasks()).masks.value.value = [];
         } catch(error){
         };
     });

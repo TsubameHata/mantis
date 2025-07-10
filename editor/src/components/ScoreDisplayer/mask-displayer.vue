@@ -5,6 +5,7 @@ import scoreStage from './score-stage.vue';
 
 import colors from "../../colors";
 import { VNodeRef } from 'vue';
+import { useMasks, usePage } from '../../store/documentState';
 const rgb = (c:number[])=>`rgb(${c[0]},${c[1]},${c[2]})`;
 
 const {zIndex=52} = defineProps<{zIndex?:number}>();
@@ -36,7 +37,23 @@ const pointerPos = reactive({x:0,y:0});
 const pointerDown = ref(false);
 
 const points = reactive<{value:number[]}>({value:[]});
-const { maskLines } = storeToRefs(useMaskLines());
+const { masks } = storeToRefs(useMasks());
+const { openedPage } = storeToRefs(usePage());
+watchEffect(() => {
+    const index = masks.value.value.findIndex(m => m.index === openedPage.value);
+    if (index === -1) {
+        masks.value.value.push({
+            index: openedPage.value,
+            lines: [],
+            uri: ""
+        });
+    }
+});
+
+const maskLines = computed(() => {
+    const target = masks.value.value.find(m => m.index === openedPage.value);
+    return target?.lines ?? [];
+});
 
 const stageRef = ref<VNodeRef | null>(null);
 
