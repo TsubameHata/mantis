@@ -5,15 +5,15 @@ import scoreStage from './score-stage.vue';
 
 import colors from "../../colors";
 import { VNodeRef } from 'vue';
-import { useMasks, usePage } from '../../store/documentState';
+import { useDiv, useMasks, usePage } from '../../store/documentState';
 const rgb = (c:number[])=>`rgb(${c[0]},${c[1]},${c[2]})`;
 
 const {zIndex=52} = defineProps<{zIndex?:number}>();
 
-const {divBlocks} = useDivLines();
+const { openedPageDiv } = storeToRefs(useDiv());
 const {left, right_w} = storeToRefs(useMargin());
 
-const rectConfigs = computed(()=>divBlocks.map((el:any, index:number)=>{
+const rectConfigs = computed(()=>openedPageDiv.value.div.divBlocks.value.map((el:any, index:number)=>{
     const h = el[1]-el[0];
     const w = right_w.value - left.value;
     return {
@@ -37,23 +37,8 @@ const pointerPos = reactive({x:0,y:0});
 const pointerDown = ref(false);
 
 const points = reactive<{value:number[]}>({value:[]});
-const { masks } = storeToRefs(useMasks());
+const { openedPageMask } = storeToRefs(useMasks());
 const { openedPage } = storeToRefs(usePage());
-watchEffect(() => {
-    const index = masks.value.value.findIndex(m => m.index === openedPage.value);
-    if (index === -1) {
-        masks.value.value.push({
-            index: openedPage.value,
-            lines: [],
-            uri: ""
-        });
-    }
-});
-
-const maskLines = computed(() => {
-    const target = masks.value.value.find(m => m.index === openedPage.value);
-    return target?.lines ?? [];
-});
 
 const stageRef = ref<VNodeRef | null>(null);
 
@@ -70,17 +55,12 @@ const mouseMove = (e:any)=>{
 
 const mouseUp = ()=>{
     pointerDown.value = false;
-    maskLines.value.push({
+    openedPageMask.value?.lines.push({
         index: nowEditing.value,
         points: [...points.value],
         width: brushRadius.value
     });
     points.value.splice(0, points.value.length);
-
-    if(true){
-        console.log(stageRef.value.getImgURI());
-        console.log(divBlocks)
-    }
 };
 
 const brushConfig = computed(()=>{
@@ -105,7 +85,7 @@ const getOneLineConfig = (index:number, points:number[], radius:number)=>{
 };
 
 const maskLinesConfig = computed(()=>{
-    let config = maskLines.value.map(maskLine=>{
+    let config = openedPageMask.value?.lines.map(maskLine=>{
         return getOneLineConfig(
             maskLine.index,
             maskLine.points,

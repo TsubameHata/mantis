@@ -5,8 +5,9 @@ import { useActivatedTool, useDivLines, useMargin, useMaskBrush } from "../../st
 import { storeToRefs } from "pinia";
 
 import colors from "../../colors";
+import { useDiv } from "../../store/documentState";
 
-const {divLines} = useDivLines();
+const divLines = useDiv().openedPageDiv?.div.divLines;
 const {top,bottom_h} = storeToRefs(useMargin());
 
 const { activatedTool } = storeToRefs(useActivatedTool());

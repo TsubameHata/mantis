@@ -29,52 +29,61 @@ export const useImgGeometry = defineStore("imgGeometry", ()=>{
     return {width, height, setImgGeometry}
 });
 
-const createDiv = ()=>{
-    const divLines = reactive<number[]>([]);
+export const createDiv = ()=>{
+    const divLines = ref<number[]>([]);
     const {top, bottom_h} = storeToRefs(useMargin());
     const divBlocks = computed(()=>{
-        if(divLines[0]==undefined) {
+        if(divLines.value[0]==undefined) {
             return [[top.value, bottom_h.value]];
         };
         let blocks: number[][] = [];
-        blocks.push([top.value, divLines[0]]);
-        for(let i=0; i<divLines.length-1; i++){
-            blocks.push([divLines[i], divLines[i+1]]);
+        blocks.push([top.value, divLines.value[0]]);
+        for(let i=0; i<divLines.value.length-1; i++){
+            blocks.push([divLines.value[i], divLines.value[i+1]]);
         };
-        blocks.push([divLines[divLines.length-1], bottom_h.value]);
+        blocks.push([divLines.value[divLines.value.length-1], bottom_h.value]);
         return blocks;
     });
     return { divLines,divBlocks }
 };
 
-type div = {
+type Div = {
         index: number,
-        div: ReturnType<typeof createDiv>
+        div: {
+            divLines: Ref<number[]>,
+            divBlocks: ComputedRef<number[][]>
+        }
     }
 
 export const useDiv = defineStore("div", ()=>{
-    const divs = ref<div[]>([]);
+    const divs = shallowRef<Div[]>([]);
 
     const {openedPage} = storeToRefs(usePage());
 
     const openedPageDiv = computed({
         get: ()=>{
-            return divs.value.find(d=>d.index===openedPage.value) ?? {
-                index: openedPage.value,
-                div: createDiv()
+            const v = divs.value.find(d=>d.index===openedPage.value);
+            if(v) return v;
+            else {
+                divs.value.push({
+                    index: openedPage.value,
+                    div: createDiv()
+                });
+                return divs.value[divs.value.length-1]
             }
         },
-        set: (newDiv: div)=>{
+        set: (newDiv: Div)=>{
             const i = divs.value.findIndex(d=>d.index==openedPage.value);
-            if(i!=-1) divs.value[i]=newDiv;
+            if(i!=-1) divs.value[i] = newDiv;
             else divs.value.push(newDiv);
+            console.log(openedPageDiv.value)
         }
     })
 
-    return { divs };
+    return { divs,openedPageDiv };
 });
 
-type mask = {
+type Mask = {
         index: number,
         uri: string,
         lines: {
@@ -85,15 +94,24 @@ type mask = {
     }
 
 export const useMasks = defineStore("masks", ()=>{
-    const masks = ref<mask[]>([]);
+    const masks = ref<Mask[]>([]);
 
     const { openedPage } = storeToRefs(usePage());
 
     const openedPageMask = computed({
         get: () => {
-            return masks.value.find(m => m.index == openedPage.value) ?? {index:openedPage, uri:"", lines: []};
+            const v = masks.value.find(m => m.index == openedPage.value);
+            if(v) return v;
+            else {
+                masks.value.push({
+                    index: openedPage.value,
+                    uri: "",
+                    lines: []
+                });
+                return masks.value[masks.value.length-1]
+            }
         },
-        set: (newMask: mask) => {
+        set: (newMask: Mask) => {
             const i = masks.value.findIndex(m => m.index == openedPage.value);
             if (i != -1) masks.value[i] = newMask;
             else masks.value.push(newMask);
@@ -101,4 +119,4 @@ export const useMasks = defineStore("masks", ()=>{
     });
 
     return {masks, openedPageMask};
-})
+});
