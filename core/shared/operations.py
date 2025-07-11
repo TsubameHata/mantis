@@ -44,6 +44,13 @@ def remove_session(session_id: int) -> None:
         )
         s.commit()
 
+def get_sessions()->list[models.Session]:
+    with Session(engine) as s:
+        sel = s.exec(
+            select(models.Session)
+        )
+        return list(sel.all())
+
 def import_pdf(session_id: int, pdf_stream: IO) -> int:
     pdf = load_pdf(pdf_stream)
     imgs = pdf2imgs(pdf)
@@ -74,7 +81,7 @@ def import_page(session_id: int, page_index: int, path: str)->None:
             content=content
         )
         with Session(engine) as s:
-            s.add(page)
+            s.merge(page)
             s.commit()
 
 def get_pages(session_id: int, 
@@ -138,7 +145,7 @@ def import_mask(session_id: int,
         content=content.read()
     )
     with Session(engine) as s:
-        s.add(mask)
+        s.merge(mask)
         s.commit()
 
 def process_masks(session_id: int, 
@@ -223,7 +230,7 @@ def process_masks(session_id: int,
                 results.append(result)
             
         for r in results:
-            s.add(r)
+            s.merge(r)
         s.commit()
 
         return_ids = []
@@ -293,3 +300,12 @@ def save_results(session_id: int,
         results = sorted(results, key=lambda x: (x.page_id, x.split_index))
         r_io = map(lambda x: io.BytesIO(x.content), results)
         save_imgs(r_io, f"./temp/session_{session_id}_results")
+
+def remove_results(session_id: int) -> None:
+    with Session(engine) as s:
+        s.exec(
+            delete(models.Result).where(
+                models.Result.session_id==session_id
+            )
+        )
+        s.commit()

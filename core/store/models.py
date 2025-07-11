@@ -1,6 +1,6 @@
 import datetime
 from typing import Optional
-from sqlmodel import Relationship, SQLModel, Field
+from sqlmodel import Relationship, SQLModel, Field, UniqueConstraint
 
 class Session(SQLModel, table=True):
     id: int|None = Field(default=None, primary_key=True)
@@ -21,11 +21,15 @@ class Page(SQLModel, table=True):
     session: Session|None = Relationship(back_populates="pages")
     mask: Optional["Mask"] = Relationship(back_populates="page")
     results: list["Result"]|None = Relationship(back_populates="page")
+
+    __table_args__ = (
+        UniqueConstraint("session_id", "index", name="uq_session_page"),
+    )
     
 class Mask(SQLModel, table=True):
     id: int|None = Field(default=None, primary_key=True)
     session_id: int = Field(foreign_key="session.id")
-    page_id: int = Field(foreign_key="page.id", unique=True)
+    page_id: int = Field(foreign_key="page.id")
     
     # JSON str
     color_list: str
@@ -37,6 +41,10 @@ class Mask(SQLModel, table=True):
     page: Page|None = Relationship(back_populates="mask")
     session: Session|None = Relationship(back_populates="masks")
 
+    __table_args__ = (
+        UniqueConstraint("session_id", "page_id", name="uq_mask_session_page"),
+    )
+
 class Result(SQLModel, table=True):
     id: int|None = Field(default = None, primary_key=True)
     session_id: int = Field(foreign_key="session.id")
@@ -47,3 +55,7 @@ class Result(SQLModel, table=True):
     
     session: Session|None = Relationship(back_populates="results")
     page: Page|None = Relationship(back_populates="results")
+
+    __table_args__ = (
+        UniqueConstraint("session_id", "page_id", "split_index", name="uq_res_session_page_index"),
+    )
