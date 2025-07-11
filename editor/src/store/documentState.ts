@@ -61,6 +61,7 @@ export const useDiv = defineStore("div", ()=>{
     const {openedPage} = storeToRefs(usePage());
 
     const openedPageDiv = computed({
+        // CAUTION: Side effect exists.
         get: ()=>{
             const v = divs.value.find(d=>d.index===openedPage.value);
             if(v) return v;
@@ -99,6 +100,7 @@ export const useMasks = defineStore("masks", ()=>{
     const { openedPage } = storeToRefs(usePage());
 
     const openedPageMask = computed({
+        // CAUTION: Side effect exists.
         get: () => {
             const v = masks.value.find(m => m.index == openedPage.value);
             if(v) return v;
