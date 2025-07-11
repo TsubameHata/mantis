@@ -2,7 +2,7 @@ import { defineStore, storeToRefs } from "pinia";
 
 import { usePositiveNumber } from "./utils";
 
-import { useImgGeometry } from "./documentState";
+import { useImgGeometry, useMargin } from "./documentState";
 
 export const useZoomLevel = defineStore('zoomLevel', ()=>{
     const zoomLevelPercent = ref(30);
@@ -27,7 +27,7 @@ export const useActivatedTool = defineStore('activatedTool', ()=>{
     return {activatedTool};
 });
 
-export const useMargin = defineStore("margin", ()=>{
+export const useMargin_ = defineStore("margin", ()=>{
     const left = usePositiveNumber(5);
     const right = usePositiveNumber(5);
     const top = usePositiveNumber(5);
@@ -55,7 +55,7 @@ export const useMargin = defineStore("margin", ()=>{
 
 export const useDivLines = defineStore("divLines", ()=>{
     const divLines = reactive<number[]>([]);
-    const {top, bottom_h} = storeToRefs(useMargin());
+    const {top, bottom_h} = storeToRefs(useMargin()).openedPageMar.value.margin;
     const divBlocks = computed(()=>{
         if(divLines[0]==undefined) {
             return [[top.value, bottom_h.value]];

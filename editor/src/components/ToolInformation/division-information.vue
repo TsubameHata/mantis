@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import MaterialSymbolsDeleteOutline from "virtual:icons/material-symbols/delete-outline";
 
-import { useActivatedTool, useDivLines, useMargin, useMaskBrush } from "../../store/appState";
+import { useActivatedTool, useDivLines, useMargin_, useMaskBrush } from "../../store/appState";
 import { storeToRefs } from "pinia";
 
 import colors from "../../colors";
-import { useDiv } from "../../store/documentState";
+import { useDiv, useMargin } from "../../store/documentState";
 
-const divLines = useDiv().openedPageDiv?.div.divLines;
-const {top,bottom_h} = storeToRefs(useMargin());
+const divLines = useDiv().openedPageDiv.div.divLines;
+const {top,bottom_h} = storeToRefs(useMargin()).openedPageMar.value.margin;
 
 const { activatedTool } = storeToRefs(useActivatedTool());
 

@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 
-import { useMargin } from '../../store/appState';
+import { useMargin_ } from '../../store/appState';
+import { useMargin } from '../../store/documentState';
 
-const margin = useMargin();
-
-const {left, right, top, bottom} = storeToRefs(margin);
+const {left, right, top, bottom} = storeToRefs(useMargin()).openedPageMar.value.margin;
 </script>
 
 <template>

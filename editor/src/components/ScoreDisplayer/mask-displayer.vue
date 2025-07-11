@@ -1,17 +1,17 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { useDivLines, useMargin, useMaskBrush, useMaskLines } from '../../store/appState';
+import { useDivLines, useMargin_, useMaskBrush, useMaskLines } from '../../store/appState';
 import scoreStage from './score-stage.vue';
 
 import colors from "../../colors";
 import { VNodeRef } from 'vue';
-import { useDiv, useMasks, usePage } from '../../store/documentState';
+import { useDiv, useMargin, useMasks, usePage } from '../../store/documentState';
 const rgb = (c:number[])=>`rgb(${c[0]},${c[1]},${c[2]})`;
 
 const {zIndex=52} = defineProps<{zIndex?:number}>();
 
 const { openedPageDiv } = storeToRefs(useDiv());
-const {left, right_w} = storeToRefs(useMargin());
+const {left, right_w} = storeToRefs(useMargin()).openedPageMar.value.margin;
 
 const rectConfigs = computed(()=>openedPageDiv.value.div.divBlocks.value.map((el:any, index:number)=>{
     const h = el[1]-el[0];
