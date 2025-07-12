@@ -1,23 +1,22 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 
-import { useMargin_ } from '../../store/appState';
-import { useImgGeometry, useMargin, usePage } from '../../store/documentState';
+import { useMargin } from '../../store/documentState';
 
 import ScoreLine from "./score-line.vue"
 
 const {zIndex=50} = defineProps<{zIndex?:number}>();
 
-const {left, right_w, top, bottom_h} = toRefs(storeToRefs(useMargin()).openedPageMar.value.margin);
+const { openedPageMar:opm } = storeToRefs(useMargin());
 </script>
 
 <template>
 <score-stage :z-index="zIndex">
     <v-layer>
-        <score-line v-model:height="top"></score-line>
-        <score-line v-model:height="bottom_h"></score-line>
-        <score-line :vertical="true" v-model:height="left"></score-line>
-        <score-line :vertical="true" v-model:height="right_w"></score-line>
+        <score-line v-model:height="opm.margin.top.value"></score-line>
+        <score-line v-model:height="opm.margin.bottom_h.value"></score-line>
+        <score-line :vertical="true" v-model:height="opm.margin.left.value"></score-line>
+        <score-line :vertical="true" v-model:height="opm.margin.right_w.value"></score-line>
     </v-layer>
 </score-stage>
 </template>

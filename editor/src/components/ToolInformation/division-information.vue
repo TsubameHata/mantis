@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import MaterialSymbolsDeleteOutline from "virtual:icons/material-symbols/delete-outline";
 
-import { useActivatedTool, useDivLines, useMargin_, useMaskBrush } from "../../store/appState";
+import { useActivatedTool, useMaskBrush } from "../../store/appState";
 import { storeToRefs } from "pinia";
 
 import colors from "../../colors";
 import { useDiv, useMargin } from "../../store/documentState";
 
-const divLines = useDiv().openedPageDiv.div.divLines;
-const {top,bottom_h} = storeToRefs(useMargin()).openedPageMar.value.margin;
+const { openedPageDiv:opd } = useDiv();
+const { openedPageMar:opm } = storeToRefs(useMargin());
 
 const { activatedTool } = storeToRefs(useActivatedTool());
 
@@ -49,7 +49,7 @@ const { brushRadius } = storeToRefs(useMaskBrush());
         :color="rgb(colors[0])">0</a-tag>
     <a-input-number
         :disabled="true"
-        :value="0"></a-input-number>
+        :value="opm.margin.top.value"></a-input-number>
     </div>
     <template #actions>
         <toggle-pen :index="0"></toggle-pen>
@@ -59,21 +59,21 @@ const { brushRadius } = storeToRefs(useMaskBrush());
     hoverable
     size="small" 
     style="width:80%" 
-    v-for="(_, index) in divLines">
+    v-for="(_, index) in opd.div.divLines.value">
 
     <div class="card_content">
         <a-tag
             :color="rgb(colors[index+1])">{{ index+1 }}</a-tag>
         <a-input-number
-            :min="top"
-            :max="bottom_h"
-            v-model:value="divLines[index]"></a-input-number>
+            :min="opm.margin.top.value"
+            :max="opm.margin.bottom_h.value"
+            v-model:value="opd.div.divLines.value[index]"></a-input-number>
     </div>
 
     <template #actions>
         <toggle-pen :index="index+1"></toggle-pen>
         <MaterialSymbolsDeleteOutline
-            @click="divLines.splice(index, 1)"></MaterialSymbolsDeleteOutline>
+            @click="opd.div.divLines.value.splice(index, 1)"></MaterialSymbolsDeleteOutline>
     </template>
 </a-card>
 </div>
