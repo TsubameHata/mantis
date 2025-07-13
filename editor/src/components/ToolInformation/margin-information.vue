@@ -4,7 +4,7 @@ import { storeToRefs } from 'pinia';
 import { useMargin_ } from '../../store/appState';
 import { useMargin } from '../../store/documentState';
 
-const {left, right, top, bottom} = storeToRefs(useMargin()).openedPageMar.value.margin;
+const {openedPageMar:opm} = storeToRefs(useMargin());
 </script>
 
 <template>
@@ -12,25 +12,25 @@ const {left, right, top, bottom} = storeToRefs(useMargin()).openedPageMar.value.
     <div class="input_container">
         <div class="input_label">{{ $t("margin.top") }}</div>
         <a-input-number
-            v-model:value="top"
+            v-model:value="opm.margin.top.value"
             :min="0"></a-input-number>
     </div>
     <div class="input_container">
         <div class="input_label">{{ $t("margin.bottom") }}</div>
         <a-input-number
-            v-model:value="bottom"
+            v-model:value="opm.margin.bottom.value"
             :min="0"></a-input-number>
     </div>
     <div class="input_container">
         <div class="input_label">{{ $t("margin.left") }}</div>
         <a-input-number
-            v-model:value="left"
+            v-model:value="opm.margin.left.value"
             :min="0"></a-input-number>
     </div>
     <div class="input_container">
         <div class="input_label">{{ $t("margin.right") }}</div>
         <a-input-number
-            v-model:value="right"
+            v-model:value="opm.margin.right.value"
             :min="0"></a-input-number>
     </div>
 </div>
