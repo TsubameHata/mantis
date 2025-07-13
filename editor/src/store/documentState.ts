@@ -103,17 +103,17 @@ export const useMargin = defineStore("mar", ()=>{
 
 export const createDiv = ()=>{
     const divLines = ref<number[]>([]);
-    const {top, bottom_h} = toRefs(storeToRefs(useMargin()).openedPageMar.value.margin);
+    const { openedPageMar } = storeToRefs(useMargin());
     const divBlocks = computed(()=>{
         if(divLines.value[0]==undefined) {
-            return [[top.value, bottom_h.value]];
+            return [[openedPageMar.value.margin.top.value, openedPageMar.value.margin.bottom_h.value]];
         };
         let blocks: number[][] = [];
-        blocks.push([top.value, divLines.value[0]]);
+        blocks.push([openedPageMar.value.margin.top.value, divLines.value[0]]);
         for(let i=0; i<divLines.value.length-1; i++){
             blocks.push([divLines.value[i], divLines.value[i+1]]);
         };
-        blocks.push([divLines.value[divLines.value.length-1], bottom_h.value]);
+        blocks.push([divLines.value[divLines.value.length-1], openedPageMar.value.margin.bottom_h.value]);
         return blocks;
     });
     return { divLines,divBlocks }
