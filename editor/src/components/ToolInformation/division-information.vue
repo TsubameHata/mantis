@@ -7,7 +7,7 @@ import { storeToRefs } from "pinia";
 import colors from "../../colors";
 import { useDiv, useMargin } from "../../store/documentState";
 
-const { openedPageDiv:opd } = useDiv();
+const { openedPageDiv:opd } = storeToRefs(useDiv());
 const { openedPageMar:opm } = storeToRefs(useMargin());
 
 const { activatedTool } = storeToRefs(useActivatedTool());
