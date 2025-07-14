@@ -7,6 +7,7 @@ import { useZoomLevel } from "./store/appState";
 export const new_session = ()=>{
     const input = document.createElement("input");
     input.type = "file";
+    input.accept = ".pdf"
     input.addEventListener("change", async (e: Event)=>{
 
         const file = (e.target as HTMLInputElement).files?.[0];
