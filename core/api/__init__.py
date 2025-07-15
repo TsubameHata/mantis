@@ -3,6 +3,7 @@ Provides web api connecting the web editor through FastAPI.
 """
 
 from io import BytesIO
+from typing import Any
 from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
@@ -22,6 +23,11 @@ def create_session(pdfname: str = Form(...)) -> int:
     except Exception as e:
         session_id = op.create_session(str(int(time.time()))+pdfname)
     return session_id
+
+@app.get("/session")
+def get_sessions() -> list[dict[str, Any]]:
+    sessions = op.get_sessions()
+    return [s.model_dump() for s in sessions]
 
 @app.delete("/session/{session_id}", status_code=204)
 def remove_session(session_id: int) -> None:
