@@ -27,5 +27,9 @@
   },
   "div": {
     "brush_r": "笔刷宽度"
+  },
+  "session": {
+    "page_count": "页",
+    "created_at": "创建于"
   }
 }

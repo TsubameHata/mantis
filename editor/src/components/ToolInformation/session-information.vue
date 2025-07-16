@@ -2,6 +2,7 @@
 import MaterialSymbolsDeleteOutline from "virtual:icons/material-symbols/delete-outline";
 import MingcuteFileNewLine from 'virtual:icons/mingcute/file-new-line';
 import MaterialSymbolsRefresh from 'virtual:icons/material-symbols/refresh';
+import MaterialSymbolsFileOpenOutline from 'virtual:icons/material-symbols/file-open-outline';
 
 import { Session, get_sessions, new_session } from "../../requests";
 
@@ -27,10 +28,14 @@ onMounted(refresh_sessions);
     v-for="s in sessions">
 
     <div class="card_content">
-        {{ s }}
+        <a-typography-title :level="5">{{ s.name }}</a-typography-title>
+        <div>{{ $t("session.created_at") }}{{ new Date(s.created_at*1000).toLocaleString() }} </div>
+        <div> {{ s.page_count }} {{ $t("session.page_count") }}</div>
     </div>
 
     <template #actions>
+        <MaterialSymbolsFileOpenOutline
+            ></MaterialSymbolsFileOpenOutline>
         <MaterialSymbolsDeleteOutline
             ></MaterialSymbolsDeleteOutline>
     </template>
@@ -58,7 +63,7 @@ onMounted(refresh_sessions);
 .card_content {
     display: flex;
     align-items: center;
-    flex-direction: row;
+    flex-direction: column;
 }
 .card_content>* {
     margin: auto;

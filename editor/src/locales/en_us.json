@@ -27,5 +27,9 @@
   },
   "div": {
     "brush_r": "Brush Radius"
+  },
+  "session": {
+    "page_count": "Pages",
+    "created_at": "Created at "
   }
 }
