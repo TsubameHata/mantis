@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 
-import { useMargin_ } from '../../store/appState';
 import { useMargin } from '../../store/documentState';
 
 const {openedPageMar:opm} = storeToRefs(useMargin());

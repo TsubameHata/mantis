@@ -22,7 +22,6 @@ const { brushRadius } = storeToRefs(useMaskBrush());
 <a-card
     hoverable
     size="small"
-    style="width:80%"
     v-if="activatedTool=='mask'">
     <div class="slider_card card_content">
         <div>{{$t("div.brush_r")}}</div>
@@ -42,8 +41,7 @@ const { brushRadius } = storeToRefs(useMaskBrush());
 </a-card>
 <a-card
     hoverable
-    size="small"
-    style="width:80%">
+    size="small">
     <div class="card_content">
     <a-tag
         :color="rgb(colors[0])">0</a-tag>
@@ -58,7 +56,6 @@ const { brushRadius } = storeToRefs(useMaskBrush());
 <a-card 
     hoverable
     size="small" 
-    style="width:80%" 
     v-for="(_, index) in opd.div.divLines.value">
 
     <div class="card_content">
@@ -87,6 +84,7 @@ const { brushRadius } = storeToRefs(useMaskBrush());
 }
 .division_information_container>* {
     margin: 1em 0;
+    width: 100%;
 }
 .card_content {
     display: flex;

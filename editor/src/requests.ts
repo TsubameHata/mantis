@@ -2,7 +2,18 @@ import axios from "axios";
 
 import { usePage, useImgSrc, useMasks } from "./store/documentState";
 import { storeToRefs } from "pinia";
-import { useZoomLevel } from "./store/appState";
+
+export type Session = {
+    created_at: number,
+    id: number,
+    name: string,
+    page_count: number
+}
+
+export const get_sessions: ()=>Promise<Session[]> = async ()=>{
+    const get_sessions_res = await axios.get("/api/session");
+    return get_sessions_res.data;
+}
 
 export const new_session = ()=>{
     const input = document.createElement("input");

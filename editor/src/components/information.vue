@@ -18,6 +18,8 @@ const showDivInformation = computed(()=>{
         v-if="activatedTool=='margin'"></margin-information>
     <division-information
         v-if="showDivInformation"></division-information>
+    <session-information
+        v-if="activatedTool=='cursor'"></session-information>
 </div>
 </template>
 

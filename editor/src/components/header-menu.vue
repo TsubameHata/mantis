@@ -2,7 +2,7 @@
 import { MenuProps } from "ant-design-vue"
 import { MenuClickEventHandler, MenuInfo } from "ant-design-vue/es/menu/src/interface";
 import { useI18n } from "vue-i18n"
-import { new_session } from "../requests";
+import { new_session, get_sessions } from "../requests";
 
 const { t } = useI18n();
 
@@ -43,6 +43,7 @@ const items = ref<MenuProps["items"]>([
 
 const onClick: MenuClickEventHandler = (e:MenuInfo)=>{
     if(e.key=="new") new_session();
+    else if (e.key=="open") get_sessions();
 }
 </script>
 
