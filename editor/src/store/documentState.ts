@@ -38,11 +38,11 @@ type Margin = {
     }
 }
 
-export const createMargin = ()=>{
-    const left = usePositiveNumber(5);
-    const right = usePositiveNumber(5);
-    const top = usePositiveNumber(5);
-    const bottom = usePositiveNumber(5);
+export const createMargin = (l:number=5, r:number=5, t:number=5, b:number=5)=>{
+    const left = usePositiveNumber(l);
+    const right = usePositiveNumber(r);
+    const top = usePositiveNumber(t);
+    const bottom = usePositiveNumber(b);
 
     const {height,width} = storeToRefs(useImgGeometry());
 
@@ -75,20 +75,38 @@ export const useMargin = defineStore("mar", ()=>{
             const v = mars.value.find(m=>m.index==openedPage.value);
             if(v) return v;
             else {
+
+                let margin: ReturnType<typeof createMargin>
+
+                if(mars.value.length>=1){
+
+                    // NOTICE: copyFrom isn't sorted by page index, but by the order added.
+                    // Designed logic not fully implemented.
+                    let copyFrom = 0;
+                    if(mars.value.length>=2) copyFrom = mars.value.length - 2;
+                    else copyFrom = mars.value.length - 1;
+
+                    const v = mars.value[copyFrom];
+
+                    if(v){
+                        margin = createMargin(
+                            v.margin.left.value,
+                            v.margin.right.value,
+                            v.margin.top.value,
+                            v.margin.bottom.value
+                        );
+                    } else {
+                        margin = createMargin();
+                    };
+                } else {
+                    margin = createMargin();
+                };
+
                 mars.value.push({
                     index: openedPage.value,
-                    margin: createMargin()
+                    margin
                 });
 
-                // if(mars.value.length>=1){
-                //     let copyFrom = 0;
-                //     if(mars.value.length>=2) copyFrom = mars.value.length - 3;
-                //     else copyFrom = mars.value.length - 2;
-                //     mars.value[mars.value.length-1].margin.bottom.value = mars.value[copyFrom].margin.bottom.value
-                //     mars.value[mars.value.length-1].margin.top.value = mars.value[copyFrom].margin.top.value
-                //     mars.value[mars.value.length-1].margin.left.value = mars.value[copyFrom].margin.left.value
-                //     mars.value[mars.value.length-1].margin.right.value = mars.value[copyFrom].margin.right.value
-                // }
                 return mars.value[mars.value.length-1]
             }
         },
