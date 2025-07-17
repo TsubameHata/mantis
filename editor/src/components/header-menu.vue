@@ -7,20 +7,20 @@ import { new_session, get_sessions } from "../requests";
 const { t } = useI18n();
 
 const items = ref<MenuProps["items"]>([
-    {
-        key: "files",
-        label: t("menu.files.files"),
-        children: [
-            {
-                key: "new",
-                label: t("menu.files.new")
-            },
-            {
-                key: "open",
-                label: t("menu.files.open")
-            }
-        ]
-    },
+    // {
+    //     key: "files",
+    //     label: t("menu.files.files"),
+    //     children: [
+    //         {
+    //             key: "new",
+    //             label: t("menu.files.new")
+    //         },
+    //         {
+    //             key: "open",
+    //             label: t("menu.files.open")
+    //         }
+    //     ]
+    // },
     {
         key: "help",
         label: t("menu.help.help"),
