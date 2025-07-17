@@ -4,7 +4,7 @@ import MingcuteFileNewLine from 'virtual:icons/mingcute/file-new-line';
 import MaterialSymbolsRefresh from 'virtual:icons/material-symbols/refresh';
 import MaterialSymbolsFileOpenOutline from 'virtual:icons/material-symbols/file-open-outline';
 
-import { Session, get_sessions, new_session } from "../../requests";
+import { Session, get_sessions, new_session, set_session, remove_session } from "../../requests";
 
 const sessions = ref<Session[]>([]);
 
@@ -19,8 +19,15 @@ onMounted(refresh_sessions);
 <template>
 <div class="session_information_container">
 <div class="operations">
-<a-button shape="circle" size="large" type="primary" @click="new_session"><template #icon><MingcuteFileNewLine/></template></a-button>
-<a-button shape="circle" size="large" @click="refresh_sessions"><template #icon><MaterialSymbolsRefresh/></template></a-button>
+<a-button shape="round" size="large" type="primary" 
+    @click="()=>{new_session();refresh_sessions();}">
+    <template #icon><MingcuteFileNewLine/></template>
+    {{ $t("menu.files.new") }}
+</a-button>
+<a-button shape="round" size="large" @click="refresh_sessions">
+    <template #icon><MaterialSymbolsRefresh/></template>
+    {{ $t("session.refresh") }}
+</a-button>
 </div>
 <a-card 
     hoverable
@@ -35,9 +42,15 @@ onMounted(refresh_sessions);
 
     <template #actions>
         <MaterialSymbolsFileOpenOutline
-            ></MaterialSymbolsFileOpenOutline>
-        <MaterialSymbolsDeleteOutline
-            ></MaterialSymbolsDeleteOutline>
+            @click="set_session(s.id, s.page_count)"></MaterialSymbolsFileOpenOutline>
+        <a-popconfirm
+            :title="$t('session.delete_confirm')"
+            :ok-text="$t('session.delete_ok')"
+            :cancel-text="$t('session.delete_cancel')"
+            @confirm="async ()=>{await remove_session(s.id); refresh_sessions();}">
+            <MaterialSymbolsDeleteOutline
+                ></MaterialSymbolsDeleteOutline>
+        </a-popconfirm>
     </template>
 </a-card>
 </div>
@@ -50,7 +63,6 @@ onMounted(refresh_sessions);
     width: 100%;
     justify-content: space-between;
 }
-
 .session_information_container {
     display: flex;
     align-items: center;

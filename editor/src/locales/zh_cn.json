@@ -30,6 +30,10 @@
   },
   "session": {
     "page_count": "页",
-    "created_at": "创建于"
+    "created_at": "创建于",
+    "delete_confirm": "确定要删除吗？",
+    "delete_cancel": "不",
+    "delete_ok": "好",
+    "refresh": "刷新"
   }
 }

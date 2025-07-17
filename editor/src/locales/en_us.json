@@ -30,6 +30,10 @@
   },
   "session": {
     "page_count": "Pages",
-    "created_at": "Created at "
+    "created_at": "Created at ",
+    "delete_confirm": "Are you sure to delete this session?",
+    "delete_ok": "Yes",
+    "delete_cancel": "No",
+    "refresh": "Refresh"
   }
 }

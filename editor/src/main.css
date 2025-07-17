@@ -5,3 +5,8 @@ html, body, #app {
     width: 100%;
     overflow: hidden;
 }
+
+svg {
+    font-size: inherit;
+    vertical-align: -0.125em;
+}
