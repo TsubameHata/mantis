@@ -24,14 +24,14 @@ const items = ref<MenuProps["items"]>([
         icon: ()=>h(ProiconsPageMargins)
     },
     {
-        key: "div",
-        label: t("tools.div"),
-        icon: ()=>h(IconParkDividingLine)
-    },
-    {
         key: "detect",
         label: t("tools.detect"),
         icon: ()=>h(PixelFaceThinking)
+    },
+    {
+        key: "div",
+        label: t("tools.div"),
+        icon: ()=>h(IconParkDividingLine)
     },
     {
         key: "mask",

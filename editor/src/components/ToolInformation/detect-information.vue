@@ -1,18 +1,21 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia';
 import { gaussian_conv } from '../../requests';
+import { useDetectResult } from '../../store/appState';
 
 const formState = reactive({
     algorithm: "gaussian_conv",
-    min_peak_d: 20,
-    min_peak_p: 0.03
+    min_peak_d: 200,
+    min_peak_p: 0.05
 });
 
-const detectedLines = ref<number[]>();
+const { divLines:detectedLines, showDetectResult } = storeToRefs(useDetectResult());
 
 const submit = async ()=>{
     if(formState.algorithm=="gaussian_conv"){
         detectedLines.value = await gaussian_conv(formState.min_peak_d, formState.min_peak_p);
     }
+    showDetectResult.value = true;
 }
 </script>
 
@@ -47,6 +50,11 @@ const submit = async ()=>{
             <a-button type="primary" @click="submit">{{ $t("detect.detect") }}</a-button>
         </a-form-item>
     </a-form>
+</a-card>
+<a-card
+    hoverable
+    size="small">
+
 </a-card>
 {{ detectedLines }}
 </div>

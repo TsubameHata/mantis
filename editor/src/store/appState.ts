@@ -2,7 +2,7 @@ import { defineStore, storeToRefs } from "pinia";
 
 import { usePositiveNumber } from "./utils";
 
-import { useImgGeometry, useMargin } from "./documentState";
+import { useDiv, useImgGeometry, useMargin, usePage } from "./documentState";
 
 export const useZoomLevel = defineStore('zoomLevel', ()=>{
     const zoomLevelPercent = ref(30);
@@ -96,3 +96,21 @@ export const useShouldUploadMask = defineStore("shouldUploadMask", ()=>{
     };
     return {umSignal, umTrigger}
 });
+
+export const useDetectResult = defineStore("detectResult", ()=>{
+    const divLines = ref<number[]>([]);
+    const showDetectResult = ref<boolean>(false);
+
+    const {openedPage} = storeToRefs(usePage());
+    watch(openedPage, ()=>{
+        showDetectResult.value = false;
+        divLines.value = [];
+    });
+
+    const div = storeToRefs(useDiv());
+    const saveDetectResult = ()=>{
+        div.openedPageDiv.value.div.divLines.value = [...divLines.value]
+    };
+
+    return { divLines, showDetectResult, saveDetectResult };
+})

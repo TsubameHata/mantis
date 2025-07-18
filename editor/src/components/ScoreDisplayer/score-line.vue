@@ -6,12 +6,14 @@ const {
     vertical = false,
     stroke,
     draggable = true,
-    dash = []
+    dash = [],
+    cursor = "grab"
 } = defineProps<{
     vertical?: boolean,
     draggable?: boolean,
     dash?: number[],
-    stroke?: string
+    stroke?: string,
+    cursor?: string
 }>();
 
 const height = defineModel<number>("height", {required:true});
@@ -66,9 +68,8 @@ const onDragEnd = computed(()=>{
     };
 })
 
-const mouseEnter = ()=>{document.body.style.cursor="grab"};
+const mouseEnter = ()=>{document.body.style.cursor=cursor};
 const mouseleave = ()=>{document.body.style.cursor="default"};
-const mouseDown = ()=>{document.body.style.cursor="grabbing"};
 
 const emit = defineEmits<{
     click: [e:MouseEvent]
@@ -80,7 +81,6 @@ const emit = defineEmits<{
     :config="lineConfig" 
     @mouseenter="mouseEnter"
     @mouseleave="mouseleave"
-    @mousedown="mouseDown"
     @dragend="onDragEnd"
     @click="(e:MouseEvent)=>emit('click', e)"></v-line>
 </template>
