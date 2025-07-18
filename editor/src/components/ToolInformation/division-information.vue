@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import MaterialSymbolsDeleteOutline from "virtual:icons/material-symbols/delete-outline";
+import MaterialSymbolsFolderCheckRounded from 'virtual:icons/material-symbols/folder-check-rounded';
 
 import { useActivatedTool, useMaskBrush } from "../../store/appState";
 import { storeToRefs } from "pinia";
 
 import colors from "../../colors";
-import { useDiv, useMargin } from "../../store/documentState";
+import { useDiv, useMargin, useMasks } from "../../store/documentState";
+import { useShouldUploadMask } from "../../store/appState";
 
 const { openedPageDiv:opd } = storeToRefs(useDiv());
 const { openedPageMar:opm } = storeToRefs(useMargin());
@@ -15,10 +17,23 @@ const { activatedTool } = storeToRefs(useActivatedTool());
 const rgb = (c:number[])=>`rgb(${c[0]},${c[1]},${c[2]})`;
 
 const { brushRadius } = storeToRefs(useMaskBrush());
+
+const { umTrigger } = useShouldUploadMask();
 </script>
 
 <template>
 <div class="division_information_container">
+<div class="operations">
+<a-button shape="round" size="large" type="primary" 
+    @click="umTrigger">
+    <template #icon><MaterialSymbolsFolderCheckRounded/></template>
+    {{ $t("divisions.save") }}
+</a-button>
+<a-button shape="round" size="large" @click="useMasks().openedPageMask.lines = []">
+    <template #icon><MaterialSymbolsDeleteOutline/></template>
+    {{ $t("divisions.delete") }}
+</a-button>
+</div>
 <a-card
     hoverable
     size="small"
@@ -77,6 +92,12 @@ const { brushRadius } = storeToRefs(useMaskBrush());
 </template>
 
 <style scoped>
+.operations {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+}
 .division_information_container {
     display: flex;
     align-items: center;

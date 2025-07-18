@@ -35,5 +35,9 @@
     "delete_cancel": "不",
     "delete_ok": "好",
     "refresh": "刷新"
+  },
+  "divisions": {
+    "delete": "清空蒙版",
+    "save": "保存蒙版"
   }
 }

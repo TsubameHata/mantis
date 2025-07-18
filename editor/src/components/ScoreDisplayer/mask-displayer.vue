@@ -97,7 +97,6 @@ const maskLinesConfig = computed(()=>{
 
 const {umSignal} = storeToRefs(useShouldUploadMask());
 watch(umSignal, async ()=>{
-    console.log("a");
     const imgBlob = await stageRef.value.getImgBlob();
     upload_mask(imgBlob);
 });

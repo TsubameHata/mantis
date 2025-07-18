@@ -8,11 +8,11 @@ export const usePage = defineStore("page", ()=>{
     const {umTrigger} = useShouldUploadMask();
 
     const openedPage_ = usePositiveNumber(1);
+    // Automatic upload mask in mask mode when page changes.
     const openedPage = computed<number>({
         get: ()=>openedPage_.value,
         set: (i:number)=>{
             umTrigger();
-            console.log(storeToRefs(useShouldUploadMask()).umSignal.value);
             setTimeout(()=>{
                 openedPage_.value = i
             }, 200);

@@ -35,5 +35,9 @@
     "delete_ok": "Yes",
     "delete_cancel": "No",
     "refresh": "Refresh"
+  },
+  "divisions": {
+    "delete": "Delete All Strokes",
+    "save": "Save Mask"
   }
 }
