@@ -13,9 +13,9 @@ class Session(SQLModel, table=True):
     results: list["Result"]|None = Relationship(back_populates="session")
     
 class Page(SQLModel, table=True):
-    id: int|None = Field(default=None, primary_key=True)
-    session_id: int = Field(foreign_key="session.id")
-    index: int
+    # id: int|None = Field(default=None, primary_key=True)
+    session_id: int = Field(primary_key=True,foreign_key="session.id")
+    index: int = Field(primary_key=True)
     content: bytes
     
     session: Session|None = Relationship(back_populates="pages")
@@ -27,9 +27,9 @@ class Page(SQLModel, table=True):
     )
     
 class Mask(SQLModel, table=True):
-    id: int|None = Field(default=None, primary_key=True)
-    session_id: int = Field(foreign_key="session.id")
-    page_id: int = Field(foreign_key="page.id")
+    # id: int|None = Field(default=None, primary_key=True)
+    session_id: int = Field(primary_key=True, foreign_key="session.id")
+    page_id: int = Field(primary_key=True, foreign_key="page.index")
     
     # JSON str
     color_list: str
@@ -46,11 +46,11 @@ class Mask(SQLModel, table=True):
     )
 
 class Result(SQLModel, table=True):
-    id: int|None = Field(default = None, primary_key=True)
-    session_id: int = Field(foreign_key="session.id")
-    page_id: int = Field(foreign_key="page.id")
+    # id: int|None = Field(default = None, primary_key=True)
+    session_id: int = Field(foreign_key="session.id", primary_key=True)
+    page_id: int = Field(foreign_key="page.index", primary_key=True)
 
-    split_index: int
+    split_index: int = Field(primary_key=True)
     content: bytes
     
     session: Session|None = Relationship(back_populates="results")

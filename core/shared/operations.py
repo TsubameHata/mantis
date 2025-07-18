@@ -160,7 +160,7 @@ def process_masks(session_id: int,
     pages_id: Iterable[int] = []
     
     ps: Iterable[models.Page] = []
-    results = []
+    results: Iterable[models.Result] = []
     
     match pages:
         case False:
@@ -189,7 +189,7 @@ def process_masks(session_id: int,
         else:
             ps = s.exec(
                 s_pages.where(models.Page.session_id==session_id,
-                    models.Page.id.in_(pages_id)
+                    models.Page.index.in_(pages_id)
                 ).options(
                         selectinload(models.Page.mask)
                 )
@@ -223,20 +223,19 @@ def process_masks(session_id: int,
                 out_bytes = cv2.imencode(".png", out)[1].tobytes()
                 result = models.Result(
                     session_id=session_id,
-                    page_id=p.id,
+                    page_id=p.index,
                     split_index=index,
                     content=out_bytes
                 )
                 results.append(result)
             
         for r in results:
-            s.merge(r)
+            r = s.merge(r)
         s.commit()
 
         return_ids = []
         for r in results:
-            s.refresh(r)
-            return_ids.append(r.id)
+            return_ids.append((r.page_id,r.split_index))
 
         return return_ids
 
