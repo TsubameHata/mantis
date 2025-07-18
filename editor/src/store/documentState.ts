@@ -11,11 +11,12 @@ export const usePage = defineStore("page", ()=>{
 export const useImgSrc = defineStore("imgSrc", ()=>{
     const openedPage = storeToRefs(usePage()).openedPage;
     // Example: `/api/session/${session_id}/page/`
+    const sessionId = ref(0);
     const pageURLPrefix = ref("");
     const imgSrc = computed(()=>{
         return pageURLPrefix.value + openedPage.value.toString();
     });
-    return {pageURLPrefix, imgSrc};
+    return {pageURLPrefix, imgSrc, sessionId};
 });
 
 export const useImgGeometry = defineStore("imgGeometry", ()=>{
@@ -69,64 +70,66 @@ export const useMargin = defineStore("mar", ()=>{
 
     const {openedPage} = storeToRefs(usePage());
 
-    const openedPageMar = computed({
-        // CAUTION
-        get: ()=>{
-            const v = mars.value.find(m=>m.index==openedPage.value);
-            if(v) return v;
-            else {
+    const getMargin = (p:number)=>{
+        const v = mars.value.find(m=>m.index==p);
+        if(v) return v;
+        else {
 
-                let margin: ReturnType<typeof createMargin>
+            let margin: ReturnType<typeof createMargin>
 
-                if(mars.value.length>=1){
+            if(mars.value.length>=1){
 
-                    // NOTICE: copyFrom isn't sorted by page index, but by the order added.
-                    // Designed logic not fully implemented.
-                    let copyFrom = 0;
-                    if(mars.value.length>=2) copyFrom = mars.value.length - 2;
-                    else copyFrom = mars.value.length - 1;
+                // NOTICE: copyFrom isn't sorted by page index, but by the order added.
+                // Designed logic not fully implemented.
+                let copyFrom = 0;
+                if(mars.value.length>=2) copyFrom = mars.value.length - 2;
+                else copyFrom = mars.value.length - 1;
 
-                    const v = mars.value[copyFrom];
+                const v = mars.value[copyFrom];
 
-                    if(v){
-                        margin = createMargin(
-                            v.margin.left.value,
-                            v.margin.right.value,
-                            v.margin.top.value,
-                            v.margin.bottom.value
-                        );
-                    } else {
-                        margin = createMargin();
-                    };
+                if(v){
+                    margin = createMargin(
+                        v.margin.left.value,
+                        v.margin.right.value,
+                        v.margin.top.value,
+                        v.margin.bottom.value
+                    );
                 } else {
                     margin = createMargin();
                 };
+            } else {
+                margin = createMargin();
+            };
 
-                mars.value.push({
-                    index: openedPage.value,
-                    margin
-                });
+            mars.value.push({
+                index: openedPage.value,
+                margin
+            });
 
-                return mars.value[mars.value.length-1]
-            }
-        },
+            return mars.value[mars.value.length-1]
+        }
+    }
+
+    const openedPageMar = computed({
+        // CAUTION
+        get: ()=>getMargin(openedPage.value),
         set: (v:Margin)=>{
             const i = mars.value.findIndex(m=>m.index==openedPage.value);
             if(i!=-1) mars.value[i] = v;
             else mars.value.push(v);
         }
     });
-    return { mars, openedPageMar }
+    return { mars, openedPageMar, getMargin }
 });
 
 export const createDiv = ()=>{
     const divLines = ref<number[]>([]);
     const { openedPageMar } = storeToRefs(useMargin());
-    const divBlocks = computed(()=>{
+    const divBlocks: ComputedRef<[number,number][]> = computed(()=>{
         if(divLines.value[0]==undefined) {
             return [[openedPageMar.value.margin.top.value, openedPageMar.value.margin.bottom_h.value]];
         };
-        let blocks: number[][] = [];
+        let blocks: [number,number][] = [];
         blocks.push([openedPageMar.value.margin.top.value, divLines.value[0]]);
         for(let i=0; i<divLines.value.length-1; i++){
             blocks.push([divLines.value[i], divLines.value[i+1]]);
@@ -141,7 +144,7 @@ type Div = {
         index: number,
         div: {
             divLines: Ref<number[]>,
-            divBlocks: ComputedRef<number[][]>
+            divBlocks: ComputedRef<[number,number][]>
         }
     }
 
@@ -150,19 +153,21 @@ export const useDiv = defineStore("div", ()=>{
 
     const {openedPage} = storeToRefs(usePage());
 
+    const getDiv = (p:number)=>{
+        const v = divs.value.find(d=>d.index===openedPage.value);
+        if(v) return v;
+        else {
+            divs.value.push({
+                index: openedPage.value,
+                div: createDiv()
+            });
+            return divs.value[divs.value.length-1]
+        }
+    }
+
     const openedPageDiv = computed({
         // CAUTION: Side effect exists.
-        get: ()=>{
-            const v = divs.value.find(d=>d.index===openedPage.value);
-            if(v) return v;
-            else {
-                divs.value.push({
-                    index: openedPage.value,
-                    div: createDiv()
-                });
-                return divs.value[divs.value.length-1]
-            }
-        },
+        get: ()=>getDiv(openedPage.value),
         set: (newDiv: Div)=>{
             const i = divs.value.findIndex(d=>d.index==openedPage.value);
             if(i!=-1) divs.value[i] = newDiv;
@@ -170,7 +175,7 @@ export const useDiv = defineStore("div", ()=>{
         }
     })
 
-    return { divs,openedPageDiv };
+    return { divs,openedPageDiv, getDiv };
 });
 
 type Mask = {
@@ -188,20 +193,27 @@ export const useMasks = defineStore("masks", ()=>{
 
     const { openedPage } = storeToRefs(usePage());
 
+    const { openedPageDiv } = storeToRefs(useDiv());
+
+    const getMask = (p:number)=>{
+        // Ensure div exists.
+        const _ = openedPageDiv.value;
+
+        const v = masks.value.find(m => m.index == openedPage.value);
+        if(v) return v;
+        else {
+            masks.value.push({
+                index: openedPage.value,
+                uri: "",
+                lines: []
+            });
+            return masks.value[masks.value.length-1]
+        }
+    }
+
     const openedPageMask = computed({
         // CAUTION: Side effect exists.
-        get: () => {
-            const v = masks.value.find(m => m.index == openedPage.value);
-            if(v) return v;
-            else {
-                masks.value.push({
-                    index: openedPage.value,
-                    uri: "",
-                    lines: []
-                });
-                return masks.value[masks.value.length-1]
-            }
-        },
+        get: () => getMask(openedPage.value),
         set: (newMask: Mask) => {
             const i = masks.value.findIndex(m => m.index == openedPage.value);
             if (i != -1) masks.value[i] = newMask;
@@ -209,5 +221,5 @@ export const useMasks = defineStore("masks", ()=>{
         }
     });
 
-    return {masks, openedPageMask};
+    return {masks, openedPageMask, getMask};
 });

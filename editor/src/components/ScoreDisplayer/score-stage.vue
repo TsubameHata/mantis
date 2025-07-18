@@ -24,7 +24,8 @@ const stageStyle =
 const stageRef = ref()
 
 const getImgURI = ()=>stageRef.value.getNode().toDataURL();
-defineExpose({getImgURI});
+const getImgBlob = ()=>stageRef.value.getNode().toBlob();
+defineExpose({getImgURI, getImgBlob});
 
 </script>
 
@@ -39,7 +40,7 @@ defineExpose({getImgURI});
     @mouseenter="(e: MouseEvent) => {emit('mouseenter', e)}"
     @mouseleave="(e: MouseEvent) => {emit('mouseleave', e)}"
     ref="stageRef"
-    >
+    id="score-stage">
     <slot></slot>
 </v-stage>
 </template>

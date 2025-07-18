@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { useDivLines, useMargin_, useMaskBrush, useMaskLines } from '../../store/appState';
+import { useMaskBrush } from '../../store/appState';
 import scoreStage from './score-stage.vue';
 
 import colors from "../../colors";
@@ -38,18 +38,17 @@ const pointerDown = ref(false);
 
 const points = reactive<{value:number[]}>({value:[]});
 const { openedPageMask } = storeToRefs(useMasks());
-const { openedPage } = storeToRefs(usePage());
 
 const stageRef = ref<VNodeRef | null>(null);
 
 const mouseMove = (e:any)=>{
-    const newPos = e.target.getStage().getPointerPosition()
-    pointerPos.x = newPos.x
-    pointerPos.y = newPos.y
+    const newPos = e.target.getStage().getPointerPosition();
+    pointerPos.x = newPos.x;
+    pointerPos.y = newPos.y;
     if(pointerDown.value){
         points.value.push(pointerPos.x);
         points.value.push(pointerPos.y);
-        points.value = [...points.value]
+        points.value = [...points.value];
     };
 };
 

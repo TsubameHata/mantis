@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { effect } from 'vue';
 import { useZoomLevel } from '../../store/appState';
 import { useActivatedTool } from '../../store/appState';
 
