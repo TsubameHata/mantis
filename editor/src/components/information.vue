@@ -20,6 +20,8 @@ const showDivInformation = computed(()=>{
         v-if="showDivInformation"></division-information>
     <session-information
         v-if="activatedTool=='cursor'"></session-information>
+    <detect-information
+        v-if="activatedTool=='detect'"></detect-information>
 </div>
 </template>
 

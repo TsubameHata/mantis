@@ -39,5 +39,12 @@
   "divisions": {
     "delete": "清空蒙版",
     "save": "保存蒙版"
+  },
+  "detect": {
+    "algorithm": "算法",
+    "gaussian_conv": "高斯卷积",
+    "min_peak_distance": "最小间隔",
+    "detect": "开始检测",
+    "min_peak_prominence": "最低显著度"
   }
 }

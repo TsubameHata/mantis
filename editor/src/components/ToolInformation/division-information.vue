@@ -23,7 +23,8 @@ const { umTrigger } = useShouldUploadMask();
 
 <template>
 <div class="division_information_container">
-<div class="operations">
+<div class="operations"
+    v-if="activatedTool=='mask'">
 <a-button shape="round" size="large" type="primary" 
     @click="umTrigger">
     <template #icon><MaterialSymbolsFolderCheckRounded/></template>

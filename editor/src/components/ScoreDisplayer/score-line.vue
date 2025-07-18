@@ -69,6 +69,10 @@ const onDragEnd = computed(()=>{
 const mouseEnter = ()=>{document.body.style.cursor="grab"};
 const mouseleave = ()=>{document.body.style.cursor="default"};
 const mouseDown = ()=>{document.body.style.cursor="grabbing"};
+
+const emit = defineEmits<{
+    click: [e:MouseEvent]
+}>();
 </script>
 
 <template>
@@ -77,7 +81,8 @@ const mouseDown = ()=>{document.body.style.cursor="grabbing"};
     @mouseenter="mouseEnter"
     @mouseleave="mouseleave"
     @mousedown="mouseDown"
-    @dragend="onDragEnd"></v-line>
+    @dragend="onDragEnd"
+    @click="(e:MouseEvent)=>emit('click', e)"></v-line>
 </template>
 
 <style scoped>

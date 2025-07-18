@@ -59,6 +59,16 @@ export const remove_session = async (id:number)=>{
     await axios.delete(`/api/session/${id}`);
 }
 
+export const gaussian_conv: (minPeakDistance?:number, minPeakProminence?:number)=>Promise<number[]> = async (minPeakDistance: number = 20, minPeakProminence:number = 0.03)=>{
+    const { sessionId } = storeToRefs(useImgSrc());
+    const { openedPage } = storeToRefs(usePage());
+
+    const gaussian_conv_res = await axios.get(
+        `/api/session/${sessionId.value}/gaussian_conv/${openedPage.value}?min_peak_distance=${minPeakDistance.toString()}&min_peak_prominence=${minPeakProminence.toString()}`
+    );
+    return gaussian_conv_res.data;
+}
+
 export const upload_mask = async (imgBlob: Blob)=>{
     const upload_mask_req = new FormData();
     
@@ -86,5 +96,5 @@ export const upload_mask = async (imgBlob: Blob)=>{
     const imgFile = new File([imgBlob], "mask.png", {type:imgBlob.type})
     upload_mask_req.append("mask", imgFile)
 
-    await axios.post(`/api/session/${sessionId.value}/mask/${page_index}`, upload_mask_req);
+    return await axios.post(`/api/session/${sessionId.value}/mask/${page_index}`, upload_mask_req);
 }

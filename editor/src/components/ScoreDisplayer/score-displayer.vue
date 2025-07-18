@@ -45,7 +45,9 @@ const showMarginStage = computed(()=>{
     :z-index="50"
     ></margin-displayer>
 <division-displayer
-    v-if="activatedTool=='div'"></division-displayer>
+    v-if="activatedTool=='div'||activatedTool=='detect'"></division-displayer>
+<detect-displayer
+    v-if="activatedTool=='detect'"></detect-displayer>
 <mask-displayer
     :z-index="52"
     v-if="activatedTool=='mask'"></mask-displayer>

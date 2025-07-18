@@ -9,7 +9,6 @@ import ProiconsPageMargins from 'virtual:icons/proicons/page-margins';
 import PixelFaceThinking from 'virtual:icons/pixel/face-thinking';
 
 import { useActivatedTool } from "../store/appState";
-import { Key } from "ant-design-vue/es/_util/type";
 
 const { t } = useI18n();
 
