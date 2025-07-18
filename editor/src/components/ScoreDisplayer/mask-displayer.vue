@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { useMaskBrush } from '../../store/appState';
+import { useMaskBrush, useShouldUploadMask } from '../../store/appState';
 import scoreStage from './score-stage.vue';
 
 import colors from "../../colors";
 import { VNodeRef } from 'vue';
 import { useDiv, useMargin, useMasks, usePage } from '../../store/documentState';
+import { upload_mask } from '../../requests';
 const rgb = (c:number[])=>`rgb(${c[0]},${c[1]},${c[2]})`;
 
 const {zIndex=52} = defineProps<{zIndex?:number}>();
@@ -92,6 +93,13 @@ const maskLinesConfig = computed(()=>{
         );
     });
     return config;
+});
+
+const {umSignal} = storeToRefs(useShouldUploadMask());
+watch(umSignal, async ()=>{
+    console.log("a");
+    const imgBlob = await stageRef.value.getImgBlob();
+    upload_mask(imgBlob);
 });
 </script>
 

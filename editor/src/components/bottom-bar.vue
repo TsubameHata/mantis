@@ -13,12 +13,12 @@ const {
 
 const zoomLevel = useZoomLevel()
 
-const pagKey = ref(0);
-
+const pagKey = shallowRef(0);
 watch(total, ()=>{
-    console.log(total.value);
-    pagKey.value++;
-})
+    triggerRef(pagKey);
+});
+
+
 </script>
 
 <template>

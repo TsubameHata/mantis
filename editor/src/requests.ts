@@ -86,5 +86,5 @@ export const upload_mask = async (imgBlob: Blob)=>{
     const imgFile = new File([imgBlob], "mask.png", {type:imgBlob.type})
     upload_mask_req.append("mask", imgFile)
 
-    await axios.post(`/api/session/${sessionId}/mask/${page_index}`, upload_mask_req);
+    await axios.post(`/api/session/${sessionId.value}/mask/${page_index}`, upload_mask_req);
 }

@@ -88,3 +88,11 @@ export const useMaskLines = defineStore("maskLines", ()=>{
     
     return {maskLines}
 });
+
+export const useShouldUploadMask = defineStore("shouldUploadMask", ()=>{
+    const umSignal = ref(1)
+    const umTrigger = ()=>{
+        umSignal.value++
+    };
+    return {umSignal, umTrigger}
+});

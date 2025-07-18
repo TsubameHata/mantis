@@ -1,10 +1,24 @@
 import { defineStore, storeToRefs } from "pinia";
 import { usePositiveNumber } from "./utils";
-import { useMargin_ } from "./appState";
+import { useShouldUploadMask } from "./appState";
 
 export const usePage = defineStore("page", ()=>{
     const pageCount = usePositiveNumber(1);
-    const openedPage = usePositiveNumber(1);
+
+    const {umTrigger} = useShouldUploadMask();
+
+    const openedPage_ = usePositiveNumber(1);
+    const openedPage = computed<number>({
+        get: ()=>openedPage_.value,
+        set: (i:number)=>{
+            umTrigger();
+            console.log(storeToRefs(useShouldUploadMask()).umSignal.value);
+            setTimeout(()=>{
+                openedPage_.value = i
+            }, 200);
+        }
+    });
+
     return {pageCount, openedPage}
 })
 
