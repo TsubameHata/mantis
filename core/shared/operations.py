@@ -122,7 +122,7 @@ def gaussian_conv(session_id: int,
         img_bytes = s.exec(
             select(models.Page).where(
                 models.Page.session_id==session_id,
-                models.Page.id==page
+                models.Page.index==page
             )
         ).first().content
         img = load_img(io.BytesIO(img_bytes))
