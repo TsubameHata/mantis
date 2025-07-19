@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import MaterialSymbolsFolderCheckRounded from 'virtual:icons/material-symbols/folder-check-rounded';
+import MaterialSymbolsDownload from 'virtual:icons/material-symbols/download';
 import StreamlineStartup from 'virtual:icons/streamline/startup';
 import { useImgSrc, usePage } from '../../store/documentState';
 import { storeToRefs } from 'pinia';
 import { useActivatedTool, useShouldUploadMask, useSplitResult } from '../../store/appState';
 import axios from 'axios';
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
 
 const formState = reactive<{
     output_img_y: number,
@@ -66,6 +69,23 @@ const processAllMasks = async ()=>{
     splitResult.value = response.data;
     processing.value = false;
     showSplitResult.value = true;
+}
+const getResultURL = (result: [number,number])=>{
+    return `/api/session/${sessionId.value.toString()}/page/${result[0].toString()}/result/${result[1].toString()}`;
+}
+const saveAllImages = async ()=>{
+    const zip = new JSZip();
+    const imgFolder = zip.folder("images");
+
+    for(const r of splitResult.value){
+        const url = getResultURL(r);
+        const res = await fetch(url);
+        const blob = await res.blob();
+        imgFolder?.file(`${r[0].toString()}-${r[1].toString()}.png`, blob);
+    };
+
+    const zipped = await zip.generateAsync({type:"blob"});
+    saveAs(zipped, "images.zip")
 }
 </script>
 
@@ -134,6 +154,19 @@ const processAllMasks = async ()=>{
                 <StreamlineStartup></StreamlineStartup>
             </template>
             {{ $t("split.split") }}</a-button>
+    </div>
+</a-card>
+<a-card
+    hoverable
+    size="small"
+    v-if="showSplitResult">
+    <div class="ensure_masks_saved">
+        <a-button
+            type="primary"
+            shape="round"
+            @click="saveAllImages">
+            <template #icon><MaterialSymbolsDownload></MaterialSymbolsDownload></template>
+            {{ $t("split.download_all_images") }}</a-button>
     </div>
 </a-card>
 </div>

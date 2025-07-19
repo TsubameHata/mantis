@@ -58,6 +58,7 @@
     "yes": "Yes",
     "no": "No",
     "split": "Split",
-    "omit": "Pages Omitted"
+    "omit": "Pages Omitted",
+    "download_all_images": "Download Images"
   }
 }

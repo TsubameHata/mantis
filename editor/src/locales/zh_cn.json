@@ -58,6 +58,7 @@
     "split": "开始切谱",
     "yes": "是",
     "no": "否",
-    "omit": "排除页面"
+    "omit": "排除页面",
+    "download_all_images": "下载图片"
   }
 }

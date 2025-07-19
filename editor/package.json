@@ -12,6 +12,8 @@
         "@iconify/json": "^2.2.355",
         "ant-design-vue": "^4.2.6",
         "axios": "^1.10.0",
+        "file-saver": "^2.0.5",
+        "jszip": "^3.10.1",
         "konva": "^9.3.20",
         "pinia": "^3.0.3",
         "unplugin-icons": "^22.1.0",
