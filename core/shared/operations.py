@@ -183,16 +183,13 @@ def process_masks(session_id: int,
         s_pages = select(models.Page)
         if all:
             ps = s.exec(
-                s_pages.where(models.Page.session_id==session_id).options(
-                    selectinload(models.Page.mask)
-                )
+                s_pages.where(models.Page.session_id==session_id)
             )
         else:
             ps = s.exec(
                 s_pages.where(models.Page.session_id==session_id,
                     models.Page.index.in_(pages_id)
-                ).options(
-                        selectinload(models.Page.mask)
+                
                 )
             )
         ps = sorted(ps, key=lambda x: x.index)
@@ -258,12 +255,13 @@ def get_results(session_id: int,
         sel = select(models.Result)
         if all:
             results = s.exec(
-                sel.where(models.Result.session_id==session_id).options(joinedload(models.Page.mask))
+                sel.where(models.Result.session_id==session_id)
+                
             )
         else:
             results = s.exec(
                 sel.where(models.Result.session_id==session_id,
-                                             models.Result.page_id.in_(pages_id)).options(joinedload(models.Page.mask))
+                                             models.Result.page_id.in_(pages_id))
             )
         results = sorted(results, key=lambda x: (x.page_id, x.split_index))
         return map(lambda x: x.content, results)
