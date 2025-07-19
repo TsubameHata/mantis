@@ -10,7 +10,7 @@ const rgb = (c:number[])=>`rgb(${c[0]},${c[1]},${c[2]})`;
 
 const formState = reactive({
     algorithm: "gaussian_conv",
-    min_peak_d: 200,
+    min_peak_d: 400,
     min_peak_p: 0.05
 });
 

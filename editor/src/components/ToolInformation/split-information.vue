@@ -6,15 +6,24 @@ import { storeToRefs } from 'pinia';
 import { useActivatedTool, useShouldUploadMask, useSplitResult } from '../../store/appState';
 import axios from 'axios';
 
-const formState = reactive({
+const formState = reactive<{
+    output_img_y: number,
+    output_img_x: number,
+    shrink_x_overflow: boolean,
+    shrink_y_overflow: boolean,
+    omit: number[]
+}>({
     output_img_y: 1080,
     output_img_x: 1920,
     shrink_x_overflow: true,
-    shrink_y_overflow: false
+    shrink_y_overflow: false,
+    omit: []
 });
-
+const { pageCount, openedPage } = storeToRefs(usePage());
+const omitOptions = computed(()=>{
+    return [...Array(pageCount.value)].map((_,index)=>({value: index+1}))
+});
 const saveAllMasks = async ()=>{
-    const { pageCount, openedPage } = storeToRefs(usePage());
     const { umTrigger } = useShouldUploadMask();
     const { activatedTool } = storeToRefs(useActivatedTool());
 
@@ -45,10 +54,14 @@ const { processingSplit:processing, splitResult, showSplitResult } = storeToRefs
 const processAllMasks = async ()=>{
     processing.value = true;
     showSplitResult.value = false;
+
+    const pagesToProcess = [...Array(pageCount.value)].map((_,index)=>(index+1)).filter((v)=>(-1==formState.omit.indexOf(v)));
+
     const response = await axios.post(`/api/session/${sessionId.value}/process`, {
         output_img_size: [formState.output_img_y, formState.output_img_x],
         shrink_x_overflow: formState.shrink_x_overflow,
-        shrink_y_overflow: formState.shrink_y_overflow
+        shrink_y_overflow: formState.shrink_y_overflow,
+        page_indices: pagesToProcess
     });
     splitResult.value = response.data;
     processing.value = false;
@@ -104,6 +117,14 @@ const processAllMasks = async ()=>{
                 <a-radio :value="true">{{ $t("split.yes") }}</a-radio>
                 <a-radio :value="false">{{ $t("split.no") }}</a-radio>
             </a-radio-group>
+        </a-form-item>
+        <a-form-item
+            :label="$t('split.omit')"
+            name="omit">
+            <a-select v-model:value="formState.omit"
+                mode="multiple"
+                style="width: 100%;"
+                :options="omitOptions"></a-select>
         </a-form-item>
     </a-form>
     <div class="submitBtn_container">
