@@ -1,7 +1,12 @@
 <script setup lang="ts">
+import MaterialSymbolsFolderCheckRounded from 'virtual:icons/material-symbols/folder-check-rounded';
+import MaterialSymbolsDeleteOutline from "virtual:icons/material-symbols/delete-outline";
 import { storeToRefs } from 'pinia';
 import { gaussian_conv } from '../../requests';
 import { useDetectResult } from '../../store/appState';
+import colors from '../../colors';
+
+const rgb = (c:number[])=>`rgb(${c[0]},${c[1]},${c[2]})`;
 
 const formState = reactive({
     algorithm: "gaussian_conv",
@@ -10,6 +15,7 @@ const formState = reactive({
 });
 
 const { divLines:detectedLines, showDetectResult } = storeToRefs(useDetectResult());
+const { saveDetectResult } = useDetectResult();
 
 const submit = async ()=>{
     if(formState.algorithm=="gaussian_conv"){
@@ -26,7 +32,7 @@ const submit = async ()=>{
     size="small">
     <a-form
         class="card_content"
-        :label-col="{span:8}"
+        :label-col="{span:9}"
         :wrapper-col="{span:12}"
         :model="formState">
         <a-form-item
@@ -53,10 +59,29 @@ const submit = async ()=>{
 </a-card>
 <a-card
     hoverable
-    size="small">
-
+    size="small"
+    v-if="showDetectResult">
+    <div class="lines">
+        <div class="line" v-for="(l,index) in detectedLines">
+            <a-tag
+                :color="rgb(colors[index])">{{ index }}</a-tag>
+            <div>{{ l }}</div>
+            <material-symbols-delete-outline
+                class="svg"
+                @click="()=>detectedLines.splice(index,1)"></material-symbols-delete-outline>
+        </div>
+    </div>
+    <div class="operations">
+        <a-button 
+            shape="round"
+            size="large"
+            type="primary"
+            @click="saveDetectResult">
+            <template #icon><material-symbols-folder-check-rounded></material-symbols-folder-check-rounded></template>
+            {{ $t("detect.save") }}
+        </a-button>
+    </div>
 </a-card>
-{{ detectedLines }}
 </div>
 </template>
 
@@ -70,5 +95,31 @@ const submit = async ()=>{
 .detect_information_container>* {
     margin: 1em 0;
     width: 100%;
+}
+
+.operations {
+    padding: 1em 1em;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.lines {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1em 1em;
+}
+
+.line {
+    display: flex;
+    flex-direction: row;
+    width: 90%;
+    justify-content: space-around;
+    margin: 1em 1em;
+}
+
+.svg:hover {
+    color: #1677ff;
 }
 </style>

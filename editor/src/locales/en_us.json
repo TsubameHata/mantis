@@ -45,6 +45,7 @@
     "gaussian_conv": "Gaussian Conv.",
     "min_peak_distance": "Min. Line Distance",
     "detect": "Detect",
-    "min_peak_prominence": "Min. Prominence"
+    "min_peak_prominence": "Min. Prominence",
+    "save": "Save"
   }
 }

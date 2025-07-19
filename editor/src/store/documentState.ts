@@ -12,6 +12,7 @@ export const usePage = defineStore("page", ()=>{
     const openedPage = computed<number>({
         get: ()=>openedPage_.value,
         set: (i:number)=>{
+            if(i>pageCount.value) i=1;
             umTrigger();
             setTimeout(()=>{
                 openedPage_.value = i

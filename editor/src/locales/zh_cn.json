@@ -45,6 +45,7 @@
     "gaussian_conv": "高斯卷积",
     "min_peak_distance": "最小间隔",
     "detect": "开始检测",
-    "min_peak_prominence": "最低显著度"
+    "min_peak_prominence": "最低显著度",
+    "save": "保存"
   }
 }

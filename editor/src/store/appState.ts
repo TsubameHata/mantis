@@ -110,6 +110,7 @@ export const useDetectResult = defineStore("detectResult", ()=>{
     const div = storeToRefs(useDiv());
     const saveDetectResult = ()=>{
         div.openedPageDiv.value.div.divLines.value = [...divLines.value]
+        openedPage.value++;
     };
 
     return { divLines, showDetectResult, saveDetectResult };
