@@ -4,6 +4,7 @@ import cv2
 from cv2.typing import MatLike
 
 def load_img(stream: IO) -> MatLike:
+    stream.seek(0)
     img = cv2.imdecode(np.frombuffer(stream.read(), np.uint8), cv2.IMREAD_COLOR)
     return img
 

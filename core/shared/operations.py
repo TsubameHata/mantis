@@ -5,7 +5,7 @@ from typing import IO
 import cv2
 from cv2.typing import MatLike
 from sqlmodel import Session,select,delete,update
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import joinedload, selectinload
 import json
 
 import core.store
@@ -54,7 +54,7 @@ def get_sessions()->list[models.Session]:
 
 def import_pdf(session_id: int, pdf_stream: IO) -> int:
     pdf = load_pdf(pdf_stream)
-    imgs = pdf2imgs(pdf)
+    imgs = pdf2imgs(pdf, dpi=300)
     pages = []
     for index,i in enumerate(imgs):
         pages.append(
@@ -196,7 +196,6 @@ def process_masks(session_id: int,
                 )
             )
         ps = sorted(ps, key=lambda x: x.index)
-
     
         for p in ps:
             color_list = json.loads(p.mask.color_list)
@@ -259,12 +258,12 @@ def get_results(session_id: int,
         sel = select(models.Result)
         if all:
             results = s.exec(
-                sel.where(models.Result.session_id==session_id)
+                sel.where(models.Result.session_id==session_id).options(joinedload(models.Page.mask))
             )
         else:
             results = s.exec(
                 sel.where(models.Result.session_id==session_id,
-                                             models.Result.page_id.in_(pages_id))
+                                             models.Result.page_id.in_(pages_id)).options(joinedload(models.Page.mask))
             )
         results = sorted(results, key=lambda x: (x.page_id, x.split_index))
         return map(lambda x: x.content, results)
