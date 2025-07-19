@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { useDivLines } from '../../store/appState';
 import { createDiv, useDiv, usePage } from '../../store/documentState';
 import scoreStage from './score-stage.vue';
 

@@ -32,7 +32,6 @@ const getResultURL = (result: [number,number])=>{
 <style scoped>
 .split_displayer {
     height: 100%;
-    overflow-y: auto;
 }
 
 .spin_container {
