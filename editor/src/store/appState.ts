@@ -11,7 +11,7 @@ export const useZoomLevel = defineStore('zoomLevel', ()=>{
         const container = document.getElementById("score_container");
         const container_w = container?.offsetWidth;
         if (container_w) {
-            const imgOffsetWidth = container_w * 0.8;
+            const imgOffsetWidth = container_w * 0.6;
             const zoomRatio = imgOffsetWidth / width;
             const zoomRatioPercent = Math.floor(zoomRatio*100);
             zoomLevelPercent.value = zoomRatioPercent;
@@ -114,4 +114,12 @@ export const useDetectResult = defineStore("detectResult", ()=>{
     };
 
     return { divLines, showDetectResult, saveDetectResult };
-})
+});
+
+export const useSplitResult = defineStore("splitResult", ()=>{
+    const splitResult = ref<[number,number][]>([]);
+    const showSplitResult = ref<boolean>(false);
+    const processingSplit = ref<boolean>(false);
+
+    return { splitResult, showSplitResult, processingSplit }
+});

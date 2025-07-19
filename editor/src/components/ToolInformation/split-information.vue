@@ -3,7 +3,7 @@ import MaterialSymbolsFolderCheckRounded from 'virtual:icons/material-symbols/fo
 import StreamlineStartup from 'virtual:icons/streamline/startup';
 import { useImgSrc, usePage } from '../../store/documentState';
 import { storeToRefs } from 'pinia';
-import { useActivatedTool, useShouldUploadMask } from '../../store/appState';
+import { useActivatedTool, useShouldUploadMask, useSplitResult } from '../../store/appState';
 import axios from 'axios';
 
 const formState = reactive({
@@ -25,7 +25,6 @@ const saveAllMasks = async ()=>{
     });
     umTrigger();
     while(openedPage.value<pageCount.value){
-        console.log(openedPage.value)
         openedPage.value++;
         await new Promise(resolve=>{
             setTimeout(resolve, 200);
@@ -41,16 +40,19 @@ const saveAllMasks = async ()=>{
 
 const { sessionId } = storeToRefs(useImgSrc());
 
-const processing = ref<boolean>(false);
+const { processingSplit:processing, splitResult, showSplitResult } = storeToRefs(useSplitResult());
 
 const processAllMasks = async ()=>{
     processing.value = true;
-    await axios.post(`/api/session/${sessionId.value}/process`, {
+    showSplitResult.value = false;
+    const response = await axios.post(`/api/session/${sessionId.value}/process`, {
         output_img_size: [formState.output_img_y, formState.output_img_x],
         shrink_x_overflow: formState.shrink_x_overflow,
         shrink_y_overflow: formState.shrink_y_overflow
     });
+    splitResult.value = response.data;
     processing.value = false;
+    showSplitResult.value = true;
 }
 </script>
 
@@ -105,7 +107,8 @@ const processAllMasks = async ()=>{
         </a-form-item>
     </a-form>
     <div class="submitBtn_container">
-        <a-button type="primary" style="width: 80%;" @click="processAllMasks">
+        <a-button type="primary" style="width: 80%;" @click="processAllMasks"
+            :disabled="processing">
             <template #icon>
                 <StreamlineStartup></StreamlineStartup>
             </template>
