@@ -1,5 +1,6 @@
 from collections.abc import Iterable
 import io
+from math import floor
 from typing import IO
 import cv2
 from cv2.typing import MatLike
@@ -153,8 +154,8 @@ def process_masks(session_id: int,
                   output_img_size=(1080,1920),
                   shrink_x_overflow=True,
                   shrink_y_overflow=False) -> Iterable[int]:
-    # TODO: Calculate it dynamically
-    output_inner_height = 700
+    # TODO: Calculate it more appropriately
+    output_inner_height = floor(output_img_size[0]*0.8)
     
     all = False
     pages_id: Iterable[int] = []

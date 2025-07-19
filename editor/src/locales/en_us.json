@@ -17,7 +17,8 @@
     "div": "Dividing Lines",
     "mask": "Masks",
     "margin": "Page Margin",
-    "detect": "Detect Division"
+    "detect": "Detect Division",
+    "split": "Split"
   },
   "margin": {
     "top": "Top",
@@ -47,5 +48,15 @@
     "detect": "Detect",
     "min_peak_prominence": "Min. Prominence",
     "save": "Save"
+  },
+  "split": {
+    "upload_all_masks": "Save All Masks",
+    "out_y": "Image Height",
+    "out_x": "Image Width",
+    "shrink_x": "Shrink x",
+    "shrink_y": "Shrink y",
+    "yes": "Yes",
+    "no": "No",
+    "split": "Split"
   }
 }

@@ -69,7 +69,7 @@ class ProcessMasksRequest(BaseModel):
     shrink_y_overflow: bool = False
 
 @app.post("/session/{session_id}/process")
-def process_masks(req: ProcessMasksRequest, session_id: int) -> list[int]:
+def process_masks(req: ProcessMasksRequest, session_id: int) -> list[tuple[int,int]]:
     result_ids = list(op.process_masks(
         session_id,
         req.page_indices,

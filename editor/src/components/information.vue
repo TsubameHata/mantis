@@ -22,6 +22,8 @@ const showDivInformation = computed(()=>{
         v-if="activatedTool=='cursor'"></session-information>
     <detect-information
         v-if="activatedTool=='detect'"></detect-information>
+    <split-information
+        v-if="activatedTool=='split'"></split-information>
 </div>
 </template>
 

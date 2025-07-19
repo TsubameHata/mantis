@@ -17,7 +17,8 @@
     "div": "分割线",
     "mask": "蒙版",
     "margin": "页边距",
-    "detect": "检测分割线"
+    "detect": "检测分割线",
+    "split": "切谱"
   },
   "margin": {
     "top": "上",
@@ -47,5 +48,15 @@
     "detect": "开始检测",
     "min_peak_prominence": "最低显著度",
     "save": "保存"
+  },
+  "split": {
+    "upload_all_masks": "保存所有遮罩",
+    "out_y": "图像高度",
+    "out_x": "图像宽度",
+    "shrink_y": "压缩溢出高度",
+    "shrink_x": "压缩溢出宽度",
+    "split": "开始切谱",
+    "yes": "是",
+    "no": "否"
   }
 }

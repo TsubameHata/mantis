@@ -32,7 +32,7 @@ const submit = async ()=>{
     size="small">
     <a-form
         class="card_content"
-        :label-col="{span:9}"
+        :label-col="{span:10}"
         :wrapper-col="{span:12}"
         :model="formState">
         <a-form-item

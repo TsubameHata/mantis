@@ -7,6 +7,7 @@ import SolarPenLinear from 'virtual:icons/solar/pen-linear';
 import IconParkDividingLine from 'virtual:icons/icon-park/dividing-line';
 import ProiconsPageMargins from 'virtual:icons/proicons/page-margins';
 import PixelFaceThinking from 'virtual:icons/pixel/face-thinking';
+import MingcuteKnifeLine from 'virtual:icons/mingcute/knife-line';
 
 import { useActivatedTool } from "../store/appState";
 
@@ -37,6 +38,11 @@ const items = ref<MenuProps["items"]>([
         key: "mask",
         label: t("tools.mask"),
         icon: ()=>h(SolarPenLinear)
+    },
+    {
+        key: "split",
+        label: t("tools.split"),
+        icon: ()=>h(MingcuteKnifeLine)
     }
 ]);
 

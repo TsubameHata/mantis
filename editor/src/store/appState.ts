@@ -20,10 +20,10 @@ export const useZoomLevel = defineStore('zoomLevel', ()=>{
     return {zoomLevelPercent, zoomRatio, resetZoomRate};
 });
 
-export type tool = "cursor" | "margin" | "div" | "detect" | "mask";
+export type Tool = "cursor" | "margin" | "div" | "detect" | "mask" | "split";
 
 export const useActivatedTool = defineStore('activatedTool', ()=>{
-    const activatedTool = ref<tool>("cursor");
+    const activatedTool = ref<Tool>("cursor");
     return {activatedTool};
 });
 
