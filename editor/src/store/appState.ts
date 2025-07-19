@@ -1,8 +1,6 @@
 import { defineStore, storeToRefs } from "pinia";
 
-import { usePositiveNumber } from "./utils";
-
-import { useDiv, useImgGeometry, useMargin, usePage } from "./documentState";
+import { useDiv, usePage } from "./documentState";
 
 export const useZoomLevel = defineStore('zoomLevel', ()=>{
     const zoomLevelPercent = ref(30);

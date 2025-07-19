@@ -134,6 +134,12 @@ export const useMargin = defineStore("mar", ()=>{
             else mars.value.push(v);
         }
     });
+
+    const { sessionId } = storeToRefs(useImgSrc());
+    watch(sessionId, ()=>{
+        mars.value = [];
+    });
+
     return { mars, openedPageMar, getMargin }
 });
 
@@ -169,11 +175,11 @@ export const useDiv = defineStore("div", ()=>{
     const {openedPage} = storeToRefs(usePage());
 
     const getDiv = (p:number)=>{
-        const v = divs.value.find(d=>d.index===openedPage.value);
+        const v = divs.value.find(d=>d.index===p);
         if(v) return v;
         else {
             divs.value.push({
-                index: openedPage.value,
+                index: p,
                 div: createDiv()
             });
             return divs.value[divs.value.length-1]
@@ -188,7 +194,12 @@ export const useDiv = defineStore("div", ()=>{
             if(i!=-1) divs.value[i] = newDiv;
             else divs.value.push(newDiv);
         }
-    })
+    });
+
+    const { sessionId } = storeToRefs(useImgSrc());
+    watch(sessionId, ()=>{
+        divs.value = [];
+    });
 
     return { divs,openedPageDiv, getDiv };
 });
@@ -234,6 +245,11 @@ export const useMasks = defineStore("masks", ()=>{
             if (i != -1) masks.value[i] = newMask;
             else masks.value.push(newMask);
         }
+    });
+
+    const { sessionId } = storeToRefs(useImgSrc());
+    watch(sessionId, ()=>{
+        masks.value = [];
     });
 
     return {masks, openedPageMask, getMask};
