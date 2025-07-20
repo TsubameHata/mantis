@@ -9,6 +9,9 @@ wheels/
 # Virtual environments
 .venv
 
+# pyinstaller
+*.spec
+
 # mypy
 .mypy_cache
 
@@ -44,3 +47,5 @@ dist-ssr
 # Automaticly generated *.d.ts
 auto-imports.d.ts
 components.d.ts
+
+tauri/src-tauri/resources

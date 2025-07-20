@@ -21,4 +21,5 @@ dependencies = [
 [dependency-groups]
 dev = [
     "mypy>=1.16.1",
+    "pyinstaller>=6.14.2",
 ]

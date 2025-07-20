@@ -1,20 +1,14 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "Mantis",
-  "version": "0.1.0",
-  "identifier": "com.tauri.dev",
-  "build": {
-    "frontendDist": "../../editor",
-    "devUrl": "http://localhost:5173",
-    "beforeDevCommand": "",
-    "beforeBuildCommand": ""
-  },
+  "identifier": "com.tsubamehata.mantis",
   "app": {
     "windows": [
       {
+        "url": "http://127.0.0.1:11451",
         "title": "Mantis",
-        "width": 1200,
-        "height": 800,
+        "width": 1400,
+        "height": 900,
         "resizable": true,
         "fullscreen": false
       }
@@ -26,6 +20,9 @@
   "bundle": {
     "active": true,
     "targets": "all",
-    "icon": []
+    "icon": ["icons/icon.ico"],
+    "resources": [
+      "resources"
+    ]
   }
 }
