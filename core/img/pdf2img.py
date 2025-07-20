@@ -3,7 +3,7 @@ import io
 from collections.abc import Iterable
 from typing import IO
 
-from . import utils
+import img.utils
 
 def load_pdf(pdf: IO)->fitz.Document:
     """Load PDF to fitz.Document."""

@@ -1,6 +1,6 @@
 import uvicorn
 
-from . import api
+import api
 
 def main():
     uvicorn.run(api.app, port=11451)

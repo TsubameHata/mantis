@@ -3,7 +3,7 @@ import cv2
 from cv2.typing import MatLike
 from numpy.typing import NDArray
 
-from ..shared.typing import Color
+from shared.typing import Color
 
 BACKGROUND_COLOR: NDArray[3] = np.array([0,255,0])
 

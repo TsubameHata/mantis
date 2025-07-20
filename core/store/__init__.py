@@ -8,7 +8,7 @@ import uuid
 
 from sqlmodel import SQLModel, create_engine, Session
 
-from . import models
+import store.models
 
 DEV = True
 

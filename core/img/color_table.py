@@ -1,7 +1,7 @@
 from itertools import combinations,product
 from collections.abc import Iterable
 
-from ..shared.typing import Color
+from shared.typing import Color
 
 def is_good_color(c: tuple[int, int, int], threshold = 20) -> bool:
     """Determine if a color is suitable for masks."""
