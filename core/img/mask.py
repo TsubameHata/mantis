@@ -17,10 +17,16 @@ def remove_background(img: MatLike,
                       mask: MatLike, 
                       color: Color, 
                       background_color = BACKGROUND_COLOR)->MatLike:
-    mask_indices = get_mask_indicies(mask, color)
-    dst = np.zeros_like(img)
+
+    h, w = min(img.shape[0], mask.shape[0]), min(img.shape[1], mask.shape[1])
+    
+    img_cropped = img[:h, :w]
+    mask_cropped = mask[:h, :w]
+    
+    mask_indices = get_mask_indicies(mask_cropped, color)
+    dst = np.zeros_like(img_cropped)
     dst[:,:] = background_color
-    dst[mask_indices] = img[mask_indices]
+    dst[mask_indices] = img_cropped[mask_indices]
     return dst
 
 def get_border_height(img: MatLike, 

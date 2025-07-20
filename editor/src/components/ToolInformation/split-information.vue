@@ -33,18 +33,22 @@ const saveAllMasks = async ()=>{
     activatedTool.value = "mask";
     openedPage.value = 1;
     await new Promise(resolve=>{
-        setTimeout(resolve, 200);
+        setTimeout(resolve, 1000);
     });
     umTrigger();
     while(openedPage.value<pageCount.value){
-        openedPage.value++;
         await new Promise(resolve=>{
-            setTimeout(resolve, 200);
+            setTimeout(resolve, 1000);
         });
+        openedPage.value++;
+        umTrigger();
     };
+    await new Promise(resolve=>{
+        setTimeout(resolve, 1000);
+    });
     umTrigger();
     await new Promise(resolve=>{
-        setTimeout(resolve, 200);
+        setTimeout(resolve, 1000);
     });
 
     activatedTool.value = "split";
