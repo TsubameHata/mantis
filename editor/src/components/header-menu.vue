@@ -25,10 +25,10 @@ const items = ref<MenuProps["items"]>([
         key: "help",
         label: t("menu.help.help"),
         children: [
-            {
-                key: "doc",
-                label: t("menu.help.doc")
-            },
+            // {
+            //     key: "doc",
+            //     label: t("menu.help.doc")
+            // },
             {
                 key: "bug",
                 label: t("menu.help.bug")
@@ -42,8 +42,8 @@ const items = ref<MenuProps["items"]>([
 ]);
 
 const onClick: MenuClickEventHandler = (e:MenuInfo)=>{
-    if(e.key=="new") new_session();
-    else if (e.key=="open") get_sessions();
+    if(e.key=="github") window.open("https://github.com/TsubameHata/mantis");
+    else if(e.key=="bug") window.open("https://github.com/TsubameHata/mantis/issues");
 }
 </script>
 
