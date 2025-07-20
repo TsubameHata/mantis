@@ -94,6 +94,7 @@ const saveAllImages = async ()=>{
 <a-card
     hoverable
     size="small">
+    {{ $t("split.warning_save_masks") }}
     <div class="ensure_masks_saved">
         <a-button
             type="primary"

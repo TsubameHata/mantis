@@ -59,6 +59,7 @@
     "yes": "是",
     "no": "否",
     "omit": "排除页面",
-    "download_all_images": "下载图片"
+    "download_all_images": "下载图片",
+    "warning_save_masks": "警告: 请确保您需要使用的遮罩都已妥善保存, 否则将无法顺利切谱. 再次保存请点击此按钮."
   }
 }

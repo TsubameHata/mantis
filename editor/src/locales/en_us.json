@@ -59,6 +59,7 @@
     "no": "No",
     "split": "Split",
     "omit": "Pages Omitted",
-    "download_all_images": "Download Images"
+    "download_all_images": "Download Images",
+    "warning_save_masks": "Warning: Please make sure that all the masks to operate are saved. To save again please click the button below."
   }
 }
