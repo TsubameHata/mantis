@@ -21,8 +21,8 @@ pub fn prob(img: &GrayImage) -> Vec<f32> {
     let mut densities: Vec<f32> = Vec::with_capacity(h);
     for y in 0..h {
         let row = &pixels[y*w .. (y+1)*w];
-        let line_density: u32 = row.iter().map(|x| {
-            let clipped = if *x>=white_threshold {255u8} else {*x};
+        let line_density: u32 = row.iter().map(|&x| {
+            let clipped = if x>=white_threshold {255u8} else {x};
             let reversed = 255-clipped;
             reversed as u32
         }).sum();
@@ -30,12 +30,13 @@ pub fn prob(img: &GrayImage) -> Vec<f32> {
     }
 
     let kernel_size: usize = cmp::max(3usize, (h/(CONV_KERNEL_SIZE_RATIO as usize))|1);
-    let kernel = utils::gaussian_kernel(kernel_size, (kernel_size as f32)/4f32);
+    // uses unnormalized kernel because there is no need to normalize it here
+    let kernel = utils::gaussian_kernel_unnormalized(kernel_size, (kernel_size as f32)/4f32);
 
     let smoothed = utils::convolve_1d_same_f32(&densities, &kernel);
     let normalized = utils::normalize_by_max_f32(&smoothed);
 
-    let sig: Vec<f32> = normalized.iter().map(|x| utils::sigmoid(*x, SIGMOID_T, SIGMOID_K)).collect();
+    let sig: Vec<f32> = normalized.iter().map(|&x| utils::sigmoid(x, SIGMOID_T, SIGMOID_K)).collect();
     let sig_normalized = utils::normalize_by_max_f32(&sig);
 
     sig_normalized

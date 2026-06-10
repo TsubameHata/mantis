@@ -46,19 +46,15 @@ pub fn percentile_u8(data: &[u8], percentage: u8) -> u8 {
     255
 }
 
-pub fn normalize_by_sum_f32(data: &[f32]) -> Vec<f32> {
-    let sum: f32 = data.iter().sum();
-    data.iter().map(|x| x/sum).collect()
-}
-
+/// Normalizes a `f32` sequence by scaling its maximum to 1.
 pub fn normalize_by_max_f32(data: &[f32]) -> Vec<f32> {
     let max = data.iter().cloned().fold(0f32, f32::max);
-    data.iter().map(|x| x/max).collect()
+    data.iter().map(|&x| x/max).collect()
 }
 
 /// Returns Gaussian filter coefficients. 
-/// The same as `cv2.getGaussianKernel`.
-pub fn gaussian_kernel(size: usize, sigma: f32) -> Vec<f32> {
+/// Its behavior is similar to `cv2.getGaussianKernel`, but **without normalizing by sum**.
+pub fn gaussian_kernel_unnormalized(size: usize, sigma: f32) -> Vec<f32> {
     assert_eq!(size%2, 1, "kernel size must be odd");
     assert!(sigma > 0.0, "sigma must be positive");
 
@@ -68,7 +64,7 @@ pub fn gaussian_kernel(size: usize, sigma: f32) -> Vec<f32> {
         consts::E.powf(-((i-(s-1.0)/2.0)/sigma).powi(2)/2.0)
     }).collect::<Vec<f32>>();
 
-    normalize_by_sum_f32(&unnormalized)
+    unnormalized
 }
 
 /// 1D convolution with the same behavior as `np.convolve` with `mode="same"`.
