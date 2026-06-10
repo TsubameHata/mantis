@@ -41,3 +41,16 @@ pub fn prob(img: &GrayImage) -> Vec<f32> {
 
     sig_normalized
 }
+
+/// Find peaks in probability vector.
+/// 
+/// Set `min_peak_distance_` to `0` to adopt default value `20`. Otherwise, `min_peak_distance >= 1`.
+pub fn find_peaks(probability: &[f32], min_peak_distance_: u32) -> Vec<usize> {
+    // adopt default value
+    let min_peak_distance = if min_peak_distance_==0 {20} else {min_peak_distance_};
+
+    // finish the latter part after porting scipy.signal
+    todo!();
+
+    vec![]
+}
