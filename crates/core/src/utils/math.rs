@@ -89,3 +89,10 @@ pub fn convolve_1d_same_f32(signal: &[f32], kernel: &[f32]) -> Vec<f32> {
 
     result
 }
+
+pub fn select_by_indices<T: Copy>(arr: &[T], indices: &[usize]) -> Vec<T> {
+    arr.iter().enumerate()
+        .filter(|(index, &_)| indices.contains(index))
+        .map(|(_, &val)| val)
+        .collect()
+}
