@@ -45,12 +45,18 @@ pub fn prob(img: &GrayImage) -> Vec<f32> {
 /// Find peaks in probability vector.
 /// 
 /// Set `min_peak_distance_` to `0` to adopt default value `20`. Otherwise, `min_peak_distance >= 1`.
-pub fn find_peaks(probability: &[f32], min_peak_distance_: u32) -> Vec<usize> {
+/// Set `min_peak_prominence_` to any negative number to adopt default value `0.03`. Otherwise, `min_peak_prominence_ >= 0`.
+pub fn find_peaks(probability: &[f32], min_peak_distance_: usize, min_peak_prominence_: f32) -> Vec<usize> {
     // adopt default value
-    let min_peak_distance = if min_peak_distance_==0 {20} else {min_peak_distance_};
+    let min_peak_distance = if min_peak_distance_==0 {20usize} else {min_peak_distance_};
+    let min_peak_prominence = if min_peak_prominence_<0f32 {0.03} else {min_peak_prominence_};
 
-    // finish the latter part after porting scipy.signal
-    todo!();
+    let peaks = utils::find_peaks::find_peaks(probability, min_peak_distance, min_peak_prominence);
 
-    vec![]
+    let centers: Vec<usize> = peaks.left_ips.iter()
+        .zip(peaks.right_ips.iter())
+        .map(|(&left_ip, &right_ip)| (left_ip+right_ip)/2 )
+        .collect();
+
+    centers
 }
