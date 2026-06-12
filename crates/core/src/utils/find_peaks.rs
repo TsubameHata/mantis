@@ -78,7 +78,7 @@ fn select_by_peak_distance(peaks: &[usize], x: &[f32], distance: usize) -> Vec<b
     keep
 }
 
-pub struct Prominence {
+struct Prominences {
     prominences: Vec<f32>,
     left_bases: Vec<usize>,
     right_bases: Vec<usize>
@@ -88,7 +88,7 @@ pub struct Prominence {
 /// 
 /// Ported from `scipy.signal._peak_finding_utils._peak_prominences`. 
 /// `wlen` in cython version is always considered as default value `-1` here.
-fn peak_prominences(peaks: &[usize], x: &[f32]) -> Prominence {
+fn peak_prominences(peaks: &[usize], x: &[f32]) -> Prominences {
     let size = peaks.len();
 
     let mut prominences: Vec<f32> = Vec::with_capacity(size);
@@ -128,62 +128,104 @@ fn peak_prominences(peaks: &[usize], x: &[f32]) -> Prominence {
         // peaks may have a prominence of 0, which will cause a warning in the original code
     }
 
-    Prominence { prominences, left_bases, right_bases }
+    Prominences { prominences, left_bases, right_bases }
+}
+
+struct Widths {
+    widths: Vec<usize>,
+    left_ips: Vec<usize>,
+    right_ips: Vec<usize>
 }
 
 /// Calculate the width of each peak in a signal.
 /// 
 /// Ported from `scipy.signal._peak_finding_utils._peak_widths`.
 /// The default value of `rel_height` is `0.5` in original code.
-fn peak_widths(peaks: &[usize], x: &[usize], rel_height: f32, prominences: &[f32], left_bases: &[usize], right_bases: &[usize]) {
+fn peak_widths(peaks: &[usize], x: &[f32], rel_height: f32, prominences: &[f32], left_bases: &[usize], right_bases: &[usize]) -> Widths {
     assert!(rel_height>=0f32);
     assert!(prominences.len()==left_bases.len() && left_bases.len()==right_bases.len());
 
     let size = prominences.len();
-    let widths: Vec<f32> = Vec::with_capacity(size);
-    let width_heights: Vec<f32> = Vec::with_capacity(size);
-    let left_ips: Vec<f32> = Vec::with_capacity(size);
-    let right_ips: Vec<f32> = Vec::with_capacity(size);
+    
+    // width_heights is not needed for this very project, therefore removed
+    // let mut width_heights: Vec<f32> = Vec::with_capacity(size);
 
-    // note: 
-    // original code is at
-    // https://github.com/scipy/scipy/blob/main/scipy/signal/_peak_finding_utils.pyx
-    // line 337
-    todo!();
+    // the original code interpolates when the true intersection height is between samples
+    // not needed here, therefore the process is ignored and the definition is slightly different
+    let mut widths: Vec<usize> = Vec::with_capacity(size);
+    let mut left_ips: Vec<usize> = Vec::with_capacity(size);
+    let mut right_ips: Vec<usize> = Vec::with_capacity(size);
+
+    for p in 0..size {
+        let i_min = left_bases[p];
+        let i_max = right_bases[p];
+        let peak = peaks[p];
+
+        assert!(i_min<=peak && peak<=i_max && i_max<=size);
+
+        let height = x[peak] - prominences[p] * rel_height;
+        // width_heights.push(height);
+
+        let mut i = peak;
+        while i_min<i && height<x[i] {
+            i -= 1;
+        }
+        // interpolation is ignored
+        left_ips.push(i);
+
+        let mut i = peak;
+        while i<i_max && height<x[i] {
+            i += 1;
+        }
+        right_ips.push(i);
+        widths.push(right_ips[p]-left_ips[p]);
+    }
+
+    Widths { widths, left_ips, right_ips }
+}
+
+pub struct Peaks {
+    pub peaks: Vec<usize>,
+    pub prominences: Vec<f32>,
+    pub left_bases: Vec<usize>,
+    pub right_bases: Vec<usize>,
+    pub widths: Vec<usize>,
+    pub left_ips: Vec<usize>,
+    pub right_ips: Vec<usize>
 }
 
 /// Find peaks inside a signal based on peak properties.
 /// 
 /// Ported from `scipy.signal._peak_finding.find_peaks`. 
 /// Only the needed parts of the function in the project have been ported.
-pub fn find_peaks(x: &[f32], distance: usize, min_prominence: f32) {
-    // the same message as in python source
-    assert!(distance>=1, "`distance` must be greater or equal to 1");
+pub fn find_peaks(x: &[f32], distance: usize, min_prominence: f32) -> Peaks {
+    assert!(distance>=1);
 
     let maxima = local_maxima_1d(x);
 
     let keep_bool = select_by_peak_distance(&maxima, &x, distance);
     let keep: Vec<usize> = (0..maxima.len())
-        .filter(|i| keep_bool[i])
+        .filter(|&i| keep_bool[i])
         .collect();
     let peaks = utils::select_by_indices(&maxima, &keep);
 
-    let Prominence { 
+    let Prominences { 
         prominences, 
         left_bases, 
         right_bases 
     } = peak_prominences(&peaks, x);
     let keep: Vec<usize> = prominences.iter().enumerate()
-        .filter(|(index, &prominence)| { prominence>=min_prominence })
-        .map(|(index, &prominence)| index)
+        .filter(|(_, &prominence)| { prominence>=min_prominence })
+        .map(|(index, _)| index)
         .collect();
     let peaks = utils::select_by_indices(&peaks, &keep);
     let left_bases = utils::select_by_indices(&left_bases, &keep);
     let right_bases = utils::select_by_indices(&right_bases, &keep);
 
-
-    // note: original code is at
-    // https://github.com/scipy/scipy/blob/main/scipy/signal/_peak_finding.py
-    // line 729
-    todo!();
+    let Widths { 
+        widths, 
+        left_ips, 
+        right_ips } = peak_widths(&peaks, &x, 0.5f32, &prominences, &left_bases, &right_bases);
+    
+    Peaks { peaks, prominences, left_bases, right_bases, widths, left_ips, right_ips }
 }

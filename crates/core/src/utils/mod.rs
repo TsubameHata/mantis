@@ -1,4 +1,4 @@
-mod math;
+pub mod math;
 pub use math::*;
 
-mod find_peaks;
+pub mod find_peaks;
