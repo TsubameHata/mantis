@@ -161,7 +161,7 @@ fn peak_widths(peaks: &[usize], x: &[f32], rel_height: f32, prominences: &[f32],
         let i_max = right_bases[p];
         let peak = peaks[p];
 
-        assert!(i_min<=peak && peak<=i_max && i_max<=size);
+        assert!(i_min<=peak && peak<=i_max && i_max<=x.len());
 
         let height = x[peak] - prominences[p] * rel_height;
         // width_heights.push(height);
@@ -214,10 +214,12 @@ pub fn find_peaks(x: &[f32], distance: usize, min_prominence: f32) -> Peaks {
         left_bases, 
         right_bases 
     } = peak_prominences(&peaks, x);
+
     let keep: Vec<usize> = prominences.iter().enumerate()
         .filter(|(_, &prominence)| { prominence>=min_prominence })
         .map(|(index, _)| index)
         .collect();
+    let prominences = utils::select_by_indices(&prominences, &keep);
     let peaks = utils::select_by_indices(&peaks, &keep);
     let left_bases = utils::select_by_indices(&left_bases, &keep);
     let right_bases = utils::select_by_indices(&right_bases, &keep);
