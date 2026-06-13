@@ -108,6 +108,9 @@ fn peak_prominences(peaks: &[usize], x: &[f32]) -> Prominences {
             if x[i]<left_min {
                 left_min = x[i];
             }
+            if i==0 {
+                break
+            }
             i -= 1;
         }
         left_bases.push(i + 1);

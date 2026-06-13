@@ -1,6 +1,6 @@
 use std::cmp;
 
-use image::{DynamicImage, GenericImage, GrayImage, RgbImage, Rgba};
+use image::{DynamicImage, GrayImage, RgbImage};
 
 use crate::utils;
 
@@ -63,34 +63,36 @@ pub fn find_peaks(probability: &[f32], min_peak_distance_: usize, min_peak_promi
 
 /// Calculate the result and paint the result onto the specific image.
 /// 
-/// It is only for internal justification, therefore the detailed mode of painting is hard-coded.
+/// It is only for internal justification, therefore the parameters and detailed mode of painting is hard-coded.
 pub fn paint_peaks(img: &DynamicImage) -> DynamicImage {
-    let w = img.width();
-    let h = img.height();
+    let w = img.width() as usize;
+    let h = img.height() as usize;
 
     let probability = prob(&img.to_luma8());
-    let peaks = find_peaks(&probability, (h as usize)/6usize, -1f32);
+    let peaks = find_peaks(&probability, h/8, -1f32);
 
-    let mut layer = DynamicImage::new_rgb8(w, h);
+    let mut layer_raw: Vec<u8> = vec![0u8; w*h*3];
     for (y, l) in probability.iter().enumerate().map(|(index, &prob)| (index, (prob*(w as f32)*0.7) as usize)) {
-        for x in 0..l {
-            layer.put_pixel(x as u32, y as u32, Rgba([255u8, 0, 0, 0]));
+        let begin = y * w * 3;
+        let end = begin + l * 3;
+        for r_index in (begin..end).step_by(3) {
+            layer_raw[r_index] = 255;
         }
     }
     for &y in peaks.iter() {
-        for x in 0..w {
-            layer.put_pixel(x, y as u32, Rgba([0u8, 255, 0, 0]));
+        let begin = y * w * 3;
+        let end = (y+1) * w * 3;
+        for g_index in ((begin+1)..(end+1)).step_by(3) {
+            layer_raw[g_index] = 255;
         }
     }
 
     let img_raw = img.to_rgb8().into_raw();
-    let layer_raw = layer.to_rgb8().into_raw();
-
     let dst_raw: Vec<u8> = img_raw.iter().zip(layer_raw.iter())
         .map(|(&i, &l)| (((i as u16)+(l as u16))/2) as u8)
         .collect();
 
-    let dst = DynamicImage::ImageRgb8(RgbImage::from_raw(w, h, dst_raw).unwrap());
+    let dst = DynamicImage::ImageRgb8(RgbImage::from_raw(w as u32, h as u32, dst_raw).unwrap());
 
     dst
 }
