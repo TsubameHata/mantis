@@ -1,6 +1,6 @@
 use std::cmp;
 
-use image::GrayImage;
+use image::{DynamicImage, GenericImage, GrayImage, RgbImage, Rgba};
 
 use crate::utils;
 
@@ -59,4 +59,38 @@ pub fn find_peaks(probability: &[f32], min_peak_distance_: usize, min_peak_promi
         .collect();
 
     centers
+}
+
+/// Calculate the result and paint the result onto the specific image.
+/// 
+/// It is only for internal justification, therefore the detailed mode of painting is hard-coded.
+pub fn paint_peaks(img: &DynamicImage) -> DynamicImage {
+    let w = img.width();
+    let h = img.height();
+
+    let probability = prob(&img.to_luma8());
+    let peaks = find_peaks(&probability, (h as usize)/6usize, -1f32);
+
+    let mut layer = DynamicImage::new_rgb8(w, h);
+    for (y, l) in probability.iter().enumerate().map(|(index, &prob)| (index, (prob*(w as f32)*0.7) as usize)) {
+        for x in 0..l {
+            layer.put_pixel(x as u32, y as u32, Rgba([255u8, 0, 0, 0]));
+        }
+    }
+    for &y in peaks.iter() {
+        for x in 0..w {
+            layer.put_pixel(x, y as u32, Rgba([0u8, 255, 0, 0]));
+        }
+    }
+
+    let img_raw = img.to_rgb8().into_raw();
+    let layer_raw = layer.to_rgb8().into_raw();
+
+    let dst_raw: Vec<u8> = img_raw.iter().zip(layer_raw.iter())
+        .map(|(&i, &l)| (((i as u16)+(l as u16))/2) as u8)
+        .collect();
+
+    let dst = DynamicImage::ImageRgb8(RgbImage::from_raw(w, h, dst_raw).unwrap());
+
+    dst
 }
