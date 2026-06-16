@@ -30,6 +30,29 @@ impl TryFrom<u8> for MaskValue {
 /// Transparent pixels leave the lower layer unchanged.
 pub struct MaskLayer(pub GrayImage);
 
+/// Similar to `MaskLayer`, but the pixel value `0` is not allowed by convention.
+pub struct FinalMask(pub GrayImage);
+
+
+impl From<MaskLayer> for FinalMask {
+    /// Drops `MaskValue::Transparent` in the `MaskLayer` and change its type.
+    fn from(mut layer: MaskLayer) -> Self {
+        for p in layer.0.as_mut() {
+            if *p == MaskValue::Transparent as u8 {
+                *p = MaskValue::Exclude as u8;
+            }
+        }
+
+        Self(layer.0)
+    }
+}
+
+impl From<FinalMask> for MaskLayer {
+    fn from(mask: FinalMask) -> Self {
+        Self(mask.0)
+    }
+}
+
 impl MaskLayer {
     /// Converts image-based mask file with multiple masks in different colors in the legacy project into `MaskLayer`.
     pub fn from_legacy(img: RgbImage, color: Rgb<u8>) -> Self {
@@ -85,7 +108,7 @@ impl MaskLayer {
 
         let img = GrayImage::from_raw(width, height, buf).unwrap();
 
-        MaskLayer(img)
+        Self(img)
     }
 
     /// Composites this layer under `upper`, and returns a new `MaskLayer`
@@ -116,18 +139,16 @@ impl MaskLayer {
     }
 }
 
-/// Similar to `MaskLayer`, but the pixel value `0` is not allowed by convention.
-pub struct FinalMask(pub GrayImage);
+impl FinalMask {
+    /// Composites `upper` over this layer in place. It is strongly recommended to do this operation in place, 
+    /// given its purpose, therefore, no method without `_mut` is provided.
+    pub fn composite_under_mut(&mut self, upper: &MaskLayer){
+        assert!(self.0.width()==upper.0.width() && self.0.height()==upper.0.height());
 
-impl From<MaskLayer> for FinalMask {
-    /// Drops `MaskValue::Transparent` in the `MaskLayer` and change its type.
-    fn from(mut layer: MaskLayer) -> Self {
-        for p in layer.0.as_mut() {
-            if *p == MaskValue::Transparent as u8 {
-                *p = MaskValue::Exclude as u8;
+        for (l, &h) in self.0.iter_mut().zip(upper.0.iter()) {
+            if h!=MaskValue::Transparent as u8 {
+                *l = h;
             }
         }
-
-        FinalMask(layer.0)
     }
 }
