@@ -33,17 +33,9 @@ pub struct MaskLayer(pub GrayImage);
 /// Similar to `MaskLayer`, but the pixel value `0` is not allowed by convention.
 pub struct FinalMask(pub GrayImage);
 
-
 impl From<MaskLayer> for FinalMask {
-    /// Drops `MaskValue::Transparent` in the `MaskLayer` and change its type.
-    fn from(mut layer: MaskLayer) -> Self {
-        for p in layer.0.as_mut() {
-            if *p == MaskValue::Transparent as u8 {
-                *p = MaskValue::Exclude as u8;
-            }
-        }
-
-        Self(layer.0)
+    fn from(layer: MaskLayer) -> Self {
+        Self::from_mask_layer(layer)
     }
 }
 
@@ -140,6 +132,17 @@ impl MaskLayer {
 }
 
 impl FinalMask {
+    /// Drops `MaskValue::Transparent` in the `MaskLayer` and change its type.
+    pub fn from_mask_layer(mut layer: MaskLayer) -> Self {
+        for p in layer.0.as_mut() {
+            if *p == MaskValue::Transparent as u8 {
+                *p = MaskValue::Exclude as u8;
+            }
+        }
+
+        Self(layer.0)
+    }
+
     /// Composites `upper` over this layer in place. It is strongly recommended to do this operation in place, 
     /// given its purpose, therefore, no method without `_mut` is provided.
     pub fn composite_under_mut(&mut self, upper: &MaskLayer){
