@@ -8,6 +8,19 @@ pub enum MaskValue {
     Exclude = 2
 }
 
+impl TryFrom<u8> for MaskValue {
+    type Error = ();
+
+    fn try_from(value: u8) -> Result<Self, Self::Error> {
+        match value {
+            0 => Ok(Self::Transparent),
+            1 => Ok(Self::Include),
+            2 => Ok(Self::Exclude),
+            _ => Err(())
+        }
+    }
+}
+
 /// Represents a mask layer, which is fundamentally an 8-bit gray image.
 /// 
 /// The value in its buffer should be valid `MaskValue`s by convention and is interpreted as its enum value, 
