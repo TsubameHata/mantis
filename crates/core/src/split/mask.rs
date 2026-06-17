@@ -154,4 +154,28 @@ impl FinalMask {
             }
         }
     }
+
+    /// Returns vertical range where some pixels are marked as `Include`, and `None` when the mask is empty.
+    /// 
+    /// The returned range is a closed interval, i.e., y is in begin..=end.
+    pub fn y_range(&self) -> Option<(usize, usize)> {
+        let width = self.0.width() as usize;
+        assert_ne!(width, 0);
+
+        let mut top: Option<usize> = None;
+        let mut bottom = 0;
+        for (y, row) in self.0.as_raw().chunks(width).enumerate() {
+            if row.iter().any(|&v| v==MaskValue::Include as u8) {
+                if top.is_none() {
+                    top = Some(y);
+                }
+                bottom = y;
+            }
+        }
+
+        match top {
+            Some(t) => Some((t, bottom)),
+            None => None
+        }
+    }
 }
