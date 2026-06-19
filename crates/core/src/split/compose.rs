@@ -1,4 +1,4 @@
-use image::{DynamicImage, GenericImageView, Rgb};
+use image::{DynamicImage, GenericImageView, Rgb, RgbImage};
 
 use crate::split::mask::FinalMask;
 
@@ -37,6 +37,7 @@ pub struct ImageComposer {
 }
 
 // This `impl` block defines the initialization methods, which is all marked `pub`.
+// All methods here are expected to be called in chain.
 impl ImageComposer {
     /// Set the mask to be proceeded. Panics if the image is already set and the size is inconsistent.
     pub fn mask(mut self, m: FinalMask) -> Self {
@@ -126,5 +127,47 @@ impl ImageComposer {
 
 // This `impl` block defines methods about actual operations.
 impl ImageComposer {
+    /// Set all unfilled options to default value. 
+    /// This function must be called after `img` `mask` are set, otherwise it panics.
+    /// 
+    /// `mask` must not be empty, otherwise it also panics.
+    /// 
+    /// Intended to be called internally and not chained, exposed to `pub` for convenience.
+    pub fn fill_options(&mut self) -> &mut Self {
+        assert!(self.img.is_some());
+        assert!(self.mask.is_some());
 
+        if self.mask_padding_y.is_none() {
+            // may panic if self.mask is empty
+            self.mask_padding_y = Some(self.mask.as_ref().unwrap().y_range().unwrap());
+        }
+
+        if self.output_size.is_none() {
+            self.output_size = Some((1920, 1080));
+        }
+
+        if self.output_padding_y.is_none() {
+            self.output_padding_y = Some(
+                ((self.output_size.as_ref().unwrap().1 as f32)*0.08f32) 
+                as usize);
+        }
+
+        if self.background_color.is_none() {
+            self.background_color = Some(Rgb([255u8, 255, 255]));
+        }
+
+        if self.overflow_x.is_none() {
+            self.overflow_x = Some(Overflow::Hidden);
+        }
+        
+        if self.overflow_y.is_none() {
+            self.overflow_y = Some(Overflow::Hidden);
+        }
+
+        self
+    }
+
+    pub fn compose(self) -> RgbImage {
+        todo!();
+    }
 }
