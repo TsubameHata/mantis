@@ -200,4 +200,31 @@ impl FinalMask {
             None => None
         }
     }
+
+    pub fn x_range(&self) -> Option<(usize, usize)> {
+        let width = self.0.width() as usize;
+        let height = self.0.height() as usize;
+        assert_ne!(width, 0);
+
+        let mut left: Option<usize> = None;
+        let mut right = 0;
+        for (y, row) in self.0.as_raw().chunks(width).enumerate() {
+            for (x, &v) in row.iter().enumerate() {
+                if v == MaskValue::Include as u8 {
+                    if left.is_none() {
+                        left = Some(x);
+                    }
+                    if right < x {
+                        right = x;
+                    }
+                }
+            }
+        }        
+
+
+        match left {
+            Some(t) => Some((t, right)),
+            None => None
+        }
+    }
 }
