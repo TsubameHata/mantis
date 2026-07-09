@@ -115,14 +115,14 @@ impl ImageComposer {
         self
     }
 
-    /// Set the action to take when overflow happens in x.
-    /// 
-    /// Default value is `Hidden`.
-    pub fn overflow_x(mut self, action: Overflow) -> Self {
-        self.overflow_x = Some(action);
+    // /// Set the action to take when overflow happens in x.
+    // /// 
+    // /// Default value is `Hidden`.
+    // pub fn overflow_x(mut self, action: Overflow) -> Self {
+    //     self.overflow_x = Some(action);
 
-        self
-    }
+    //     self
+    // }
 }
 
 // This `impl` block defines methods about actual operations.
@@ -156,9 +156,9 @@ impl ImageComposer {
             self.background_color = Some(Rgb([255u8, 255, 255]));
         }
 
-        if self.overflow_x.is_none() {
-            self.overflow_x = Some(Overflow::Hidden);
-        }
+        // if self.overflow_x.is_none() {
+        //     self.overflow_x = Some(Overflow::Hidden);
+        // }
         
         if self.overflow_y.is_none() {
             self.overflow_y = Some(Overflow::Hidden);
@@ -167,7 +167,70 @@ impl ImageComposer {
         self
     }
 
-    pub fn compose(self) -> RgbImage {
-        todo!();
+    pub fn compose(mut self) -> RgbImage {
+
+        // utility function
+        fn compute_range_with_correction(origin_range: &(usize, usize), ratio_num: usize, ratio_den: usize) -> (usize, usize) {
+            // emphasize clone semantic
+            let tmp = origin_range;
+
+            // if ignore the correction below
+            // the length of the final result may be slightly different from output
+            let correction = ratio_den / 2;
+            // (tmp.0 * ratio_num / ratio_den, tmp.1 * ratio_num / ratio_den)
+            ((tmp.0 * ratio_num + correction)/ratio_den, (tmp.1 * ratio_num + correction)/ratio_den)
+        }
+
+        self.fill_options();
+
+        // with revision, 
+        // to make the image aligned by the middle height of padding
+        let origin_y_middle = {
+            let mpy = self.mask_padding_y.unwrap();
+            (mpy.0 + mpy.1)/2
+        };
+        let origin_y_range_no_rev = self.mask.as_ref().unwrap().y_range().unwrap();
+        let origin_height_half = usize::max(origin_y_range_no_rev.1 - origin_y_middle, 
+            origin_y_middle - origin_y_range_no_rev.0);
+        let origin_height = 2*origin_height_half;
+        let origin_y_range = (origin_y_middle-origin_height_half, origin_y_middle+origin_height_half);
+
+        let origin_inner_height = {
+            let mpy = self.mask_padding_y.unwrap();
+            mpy.1 - mpy.0
+        };
+            
+        let output_height = self.output_size.unwrap().1;
+        let output_inner_height = output_height - 2*self.output_padding_y.unwrap();
+
+        // store the numerator and denominator seperately for convenience and percision
+        let (mut ratio_num, mut ratio_den) = (output_inner_height, origin_inner_height);
+
+        // coordinate of resized and not cropped picture
+        let mut needed_y_range = compute_range_with_correction(&origin_y_range, ratio_num, ratio_den);
+
+        // deal with y-overflow first
+        // y-overflow: output_inner_height/output_height > origin_inner_height/origin_height,
+        // or, output_height < origin_height * ratio
+        if output_height * ratio_den < origin_height * ratio_num {
+            // y-overflow occurs
+            match self.overflow_y.unwrap() {
+                Overflow::Hidden => {
+                    // the same way of correction
+                    let correction = ratio_den / 2;
+
+                    let half_fittable_height = (origin_height_half * ratio_num + correction) / ratio_den;
+                    needed_y_range = 
+                        (origin_y_middle-half_fittable_height, origin_y_middle+half_fittable_height);
+                },
+                Overflow::Shrink => {
+                    (ratio_num, ratio_den) = 
+                        (output_height, origin_height);
+                    needed_y_range = compute_range_with_correction(&origin_y_range, ratio_num, ratio_den);
+                }
+            }
+        }
+        
+        todo!()
     }
 }
