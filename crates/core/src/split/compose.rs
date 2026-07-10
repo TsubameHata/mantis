@@ -1,7 +1,8 @@
-use image::{DynamicImage, GenericImageView, Rgb, RgbImage};
+use image::{DynamicImage, GenericImageView, Rgb, RgbImage, imageops::{FilterType, resize, crop}};
 
-use crate::split::mask::FinalMask;
+use crate::split::mask::{FinalMask, MaskValue};
 
+#[derive(Clone, Copy)]
 /// Defines the action to take when the size of image, after scaling according to the padding, 
 /// is greater than the output canvas.
 pub enum Overflow {
@@ -115,14 +116,89 @@ impl ImageComposer {
         self
     }
 
-    // /// Set the action to take when overflow happens in x.
-    // /// 
-    // /// Default value is `Hidden`.
-    // pub fn overflow_x(mut self, action: Overflow) -> Self {
-    //     self.overflow_x = Some(action);
+    /// Set the action to take when overflow happens in x.
+    /// 
+    /// Default value is `Hidden`.
+    pub fn overflow_x(mut self, action: Overflow) -> Self {
+        self.overflow_x = Some(action);
 
-    //     self
-    // }
+        self
+    }
+}
+
+/// Utility function for internal use in `ImageComposer::compose`.
+fn compute_range_with_correction(origin_range: (usize, usize), ratio_num: usize, ratio_den: usize) -> (usize, usize) {
+    // emphasize clone semantic
+    let tmp = origin_range;
+
+    // if ignore the correction below
+    // the length of the final result may be slightly different from output
+    let correction = ratio_den / 2;
+    // (tmp.0 * ratio_num / ratio_den, tmp.1 * ratio_num / ratio_den)
+    ((tmp.0 * ratio_num + correction)/ratio_den, (tmp.1 * ratio_num + correction)/ratio_den)
+}
+
+/// For internal use only.
+/// 
+/// Revise the range to make the image aligned by the middle.
+/// 
+/// Return value: `(middle, half_length, new_range)`
+fn symmetrize_range(content: (usize, usize), inner: (usize, usize)) -> (usize, usize, (usize, usize)) {
+    let anchor = (inner.0 + inner.1)/2;
+
+    // need to defend against potential underflow because inner is inputed by user
+    let half = usize::max(anchor.saturating_sub(content.0), content.1.saturating_sub(anchor));
+
+    (anchor, half, (anchor-half, anchor+half))
+}
+
+/// For internal use only. 
+/// 
+/// Return value: `(ratio, resized_range, shrunk)`.
+fn fix_ratio(
+    origin_range_no_rev: (usize, usize),
+    origin_inner_range: (usize, usize),
+    output_total: usize,
+    mode: Overflow,
+    ratio: (usize, usize)
+) -> ((usize, usize), (usize, usize), bool){
+    let (origin_middle, origin_range_half, origin_range) = symmetrize_range(origin_range_no_rev, origin_inner_range);
+
+    let resized_range: (usize, usize);
+    let mut new_ratio = ratio;
+
+    let mut shrunk = false;
+    
+    // deal with overflow
+    // overflow <=> output_total < origin_total * ratio
+    // <=> the following condition
+    if output_total * ratio.1 < origin_range_half * 2 * ratio.0 {
+        use Overflow::*;
+        // overflow occurs
+        match mode {
+            Hidden => {
+                // the same way of correction
+                let correction = ratio.1 / 2;
+
+                let half_fittable_height = (origin_range_half * ratio.0 + correction) / ratio.1;
+
+                let resized_middle = origin_middle * ratio.0 / ratio.1;
+                resized_range =
+                    (resized_middle - half_fittable_height,
+                    resized_middle + half_fittable_height);
+            },
+            
+            Shrink => {
+                new_ratio = (output_total, 2*origin_range_half);
+                resized_range = compute_range_with_correction(origin_range, new_ratio.0, new_ratio.1);
+                shrunk = true;
+            }
+        }
+    } else {
+        resized_range = compute_range_with_correction(origin_range, new_ratio.0, new_ratio.1);
+    }
+    
+    (new_ratio, resized_range, shrunk)
 }
 
 // This `impl` block defines methods about actual operations.
@@ -156,9 +232,9 @@ impl ImageComposer {
             self.background_color = Some(Rgb([255u8, 255, 255]));
         }
 
-        // if self.overflow_x.is_none() {
-        //     self.overflow_x = Some(Overflow::Hidden);
-        // }
+        if self.overflow_x.is_none() {
+            self.overflow_x = Some(Overflow::Hidden);
+        }
         
         if self.overflow_y.is_none() {
             self.overflow_y = Some(Overflow::Hidden);
@@ -168,69 +244,71 @@ impl ImageComposer {
     }
 
     pub fn compose(mut self) -> RgbImage {
-
-        // utility function
-        fn compute_range_with_correction(origin_range: &(usize, usize), ratio_num: usize, ratio_den: usize) -> (usize, usize) {
-            // emphasize clone semantic
-            let tmp = origin_range;
-
-            // if ignore the correction below
-            // the length of the final result may be slightly different from output
-            let correction = ratio_den / 2;
-            // (tmp.0 * ratio_num / ratio_den, tmp.1 * ratio_num / ratio_den)
-            ((tmp.0 * ratio_num + correction)/ratio_den, (tmp.1 * ratio_num + correction)/ratio_den)
-        }
-
         self.fill_options();
 
-        // with revision, 
-        // to make the image aligned by the middle height of padding
-        let origin_y_middle = {
-            let mpy = self.mask_padding_y.unwrap();
-            (mpy.0 + mpy.1)/2
-        };
-        let origin_y_range_no_rev = self.mask.as_ref().unwrap().y_range().unwrap();
-        let origin_height_half = usize::max(origin_y_range_no_rev.1 - origin_y_middle, 
-            origin_y_middle - origin_y_range_no_rev.0);
-        let origin_height = 2*origin_height_half;
-        let origin_y_range = (origin_y_middle-origin_height_half, origin_y_middle+origin_height_half);
+        let (page_width, page_height) = self.mask.as_ref().unwrap().0.dimensions();
 
-        let origin_inner_height = {
-            let mpy = self.mask_padding_y.unwrap();
-            mpy.1 - mpy.0
-        };
-            
-        let output_height = self.output_size.unwrap().1;
-        let output_inner_height = output_height - 2*self.output_padding_y.unwrap();
+        let (output_width, output_height) = self.output_size.unwrap();
+        let output_inner_height = output_height - self.output_padding_y.unwrap()*2;
 
-        // store the numerator and denominator seperately for convenience and percision
-        let (mut ratio_num, mut ratio_den) = (output_inner_height, origin_inner_height);
+        let mask_padding_y = self.mask_padding_y.unwrap();
+        let origin_inner_height = mask_padding_y.1 - mask_padding_y.0;
+        let origin_height_range = self.mask.as_ref().unwrap().y_range().unwrap();
 
-        // coordinate of resized and not cropped picture
-        let mut needed_y_range = compute_range_with_correction(&origin_y_range, ratio_num, ratio_den);
+        let ratio = (output_inner_height, origin_inner_height);
 
-        // deal with y-overflow first
-        // y-overflow: output_inner_height/output_height > origin_inner_height/origin_height,
-        // or, output_height < origin_height * ratio
-        if output_height * ratio_den < origin_height * ratio_num {
-            // y-overflow occurs
-            match self.overflow_y.unwrap() {
-                Overflow::Hidden => {
-                    // the same way of correction
-                    let correction = ratio_den / 2;
+        let (ratio, mut needed_y_range, _) = fix_ratio(
+            origin_height_range, mask_padding_y, output_height, self.overflow_y.unwrap(), ratio);
 
-                    let half_fittable_height = (origin_height_half * ratio_num + correction) / ratio_den;
-                    needed_y_range = 
-                        (origin_y_middle-half_fittable_height, origin_y_middle+half_fittable_height);
-                },
-                Overflow::Shrink => {
-                    (ratio_num, ratio_den) = 
-                        (output_height, origin_height);
-                    needed_y_range = compute_range_with_correction(&origin_y_range, ratio_num, ratio_den);
+        let origin_width_range = self.mask.as_ref().unwrap().x_range().unwrap();
+
+        let (ratio, needed_x_range, shrunk) = fix_ratio(
+            origin_width_range, origin_width_range, output_width, self.overflow_x.unwrap(), ratio);
+        if shrunk {
+            needed_y_range = compute_range_with_correction(symmetrize_range(origin_height_range, mask_padding_y).2, ratio.0, ratio.1);
+        }
+
+        let resized_width = page_width * (ratio.0 as u32) / (ratio.1 as u32);
+        let resized_height = page_height * (ratio.0 as u32) / (ratio.1 as u32);
+
+        // mutability for use of `crop`
+        // for the special format of mask, we must use `FilterType::Nearest`
+        let mut resized_mask = resize(&self.mask.as_ref().unwrap().0, resized_width, resized_height, FilterType::Nearest);
+        // the filter here can be more considered
+        let mut resized_img = resize(&self.img.unwrap(), resized_width, resized_height, FilterType::Triangle);
+
+        let cropped_mask = crop(&mut resized_mask, needed_x_range.0 as u32, needed_y_range.0 as u32, 
+            (needed_x_range.1 - needed_x_range.0 + 1) as u32, (needed_y_range.1 - needed_y_range.0 + 1) as u32).to_image();
+        let cropped_img = crop(&mut resized_img, needed_x_range.0 as u32, needed_y_range.0 as u32, 
+            (needed_x_range.1 - needed_x_range.0 + 1) as u32, (needed_y_range.1 - needed_y_range.0 + 1) as u32).to_image();
+        
+        let final_width = cropped_mask.width() as usize;
+        let final_height = cropped_mask.height() as usize;
+
+        let offset_x = (output_width - final_width)/2;
+        let offset_y = (output_height - final_height)/2;
+        
+        // create output canvas and paint
+
+        // create white canvas
+        let mut output = RgbImage::from_pixel(output_width as u32, output_height as u32, Rgb([255, 255, 255]));
+        
+        // directly consumes mask and img
+        let mask_raw = cropped_mask.into_raw();
+        let img_raw = cropped_img.into_raw();
+
+        // write pixels
+        for y in 0..final_height {
+            let mask_row = &mask_raw[y*final_width .. (y+1)*final_width];
+            let img_row = &img_raw[3*y*final_width .. 3*(y+1)*final_width];
+            for (x, (&m, pixel)) in mask_row.iter().zip(img_row.chunks(3)).enumerate() {
+                if m==(MaskValue::Include as u8) {
+                    output.put_pixel((x + offset_x) as u32, (y + offset_y) as u32, 
+                        Rgb([pixel[0], pixel[1], pixel[2]]));
                 }
             }
         }
-        
-        todo!()
+
+        output
     }
 }
