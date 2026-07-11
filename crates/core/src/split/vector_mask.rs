@@ -68,6 +68,14 @@ fn paint_segment(img: &mut GrayImage, radius: usize, value: MaskValue, x1: usize
 fn render_path(radius: usize, path: &[(usize, usize)], value: MaskValue, mw: usize, mh: usize) -> GrayImage {
     let mut img = GrayImage::from_pixel(mw as u32, mh as u32, Luma([MaskValue::Transparent as u8]));
 
+    // if `path.len()==0`, no problem
+    // but if it is `1`, the only point will not be painted below
+    if path.len()==1 {
+        let (x,y) = path[0];
+        draw_filled_circle_mut(&mut img, (x as i32, y as i32), radius as i32, Luma([value as u8]));
+        return img;
+    }
+
     for window in path.windows(2) {
         let ((x1, y1), (x2, y2)) = (window[0], window[1]);
         paint_segment(&mut img, radius, value, x1, y1, x2, y2);
