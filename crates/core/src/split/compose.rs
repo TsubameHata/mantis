@@ -11,7 +11,7 @@ pub enum Overflow {
 }
 
 #[derive(Default)]
-pub struct ImageComposer {
+pub struct ImageComposer<'a> {
     /// The mask to be proceeded.
     mask: Option<FinalMask>, 
 
@@ -20,7 +20,7 @@ pub struct ImageComposer {
     mask_padding_y: Option<(usize, usize)>,
 
     /// The original image to be proceeded. Must be the same size as the mask.
-    img: Option<DynamicImage>,
+    img: Option<&'a DynamicImage>,
 
     /// The size of the output, the width followed by the height. Example: (1920, 1080).
     output_size: Option<(usize, usize)>,
@@ -39,7 +39,7 @@ pub struct ImageComposer {
 
 // This `impl` block defines the initialization methods, which is all marked `pub`.
 // All methods here are expected to be called in chain.
-impl ImageComposer {
+impl<'a> ImageComposer<'a> {
     /// Set the mask to be proceeded. Panics if the image is already set and the size is inconsistent.
     pub fn mask(mut self, m: FinalMask) -> Self {
         if self.img.is_some() {
@@ -65,7 +65,7 @@ impl ImageComposer {
     }
 
     /// Set the original image to be proceeded, which must be the same size as the mask, and panics if the size is inconsistent.
-    pub fn img(mut self, i: DynamicImage) -> Self {
+    pub fn img(mut self, i: &'a DynamicImage) -> Self {
         if self.mask.is_some() {
             assert_eq!(self.mask.as_ref().unwrap().0.dimensions(), i.dimensions());
         }
@@ -202,7 +202,7 @@ fn fix_ratio(
 }
 
 // This `impl` block defines methods about actual operations.
-impl ImageComposer {
+impl<'a> ImageComposer<'a> {
     /// Set all unfilled options to default value. 
     /// This function must be called after `img` `mask` are set, otherwise it panics.
     /// 
@@ -275,7 +275,7 @@ impl ImageComposer {
         // for the special format of mask, we must use `FilterType::Nearest`
         let mut resized_mask = resize(&self.mask.as_ref().unwrap().0, resized_width, resized_height, FilterType::Nearest);
         // the filter here can be more considered
-        let mut resized_img = resize(&self.img.unwrap(), resized_width, resized_height, FilterType::Triangle);
+        let mut resized_img = resize(self.img.unwrap(), resized_width, resized_height, FilterType::Triangle);
 
         let cropped_mask = crop(&mut resized_mask, needed_x_range.0 as u32, needed_y_range.0 as u32, 
             (needed_x_range.1 - needed_x_range.0 + 1) as u32, (needed_y_range.1 - needed_y_range.0 + 1) as u32).to_image();
