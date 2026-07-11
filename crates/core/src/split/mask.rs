@@ -2,6 +2,7 @@ use image::{GrayImage, RgbImage, Rgb};
 
 /// Allowed pixel values in `MaskLayer` and `FinalMask`.
 #[repr(u8)]
+#[derive(Clone, Copy)]
 pub enum MaskValue {
     Transparent = 0,
     Include = 1,
