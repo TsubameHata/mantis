@@ -40,6 +40,11 @@ pub struct ImageComposer<'a> {
 // This `impl` block defines the initialization methods, which is all marked `pub`.
 // All methods here are expected to be called in chain.
 impl<'a> ImageComposer<'a> {
+    /// Create an empty `ImageComposer`.
+    pub fn new() -> Self {
+        ImageComposer { mask: None, mask_padding_y: None, img: None, output_size: None, output_padding_y: None, background_color: None, overflow_y: None, overflow_x: None }
+    }
+
     /// Set the mask to be proceeded. Panics if the image is already set and the size is inconsistent.
     pub fn mask(mut self, m: FinalMask) -> Self {
         if self.img.is_some() {
