@@ -1,4 +1,4 @@
-use image::{DynamicImage, GenericImageView, Rgb, RgbImage, imageops::{FilterType, resize, crop}};
+use image::{Rgb, RgbImage, imageops::{FilterType, resize, crop}};
 
 use crate::split::mask::{FinalMask, MaskValue};
 
@@ -20,7 +20,7 @@ pub struct ImageComposer<'a> {
     mask_padding_y: Option<(usize, usize)>,
 
     /// The original image to be proceeded. Must be the same size as the mask.
-    img: Option<&'a DynamicImage>,
+    img: Option<&'a RgbImage>,
 
     /// The size of the output, the width followed by the height. Example: (1920, 1080).
     output_size: Option<(usize, usize)>,
@@ -70,7 +70,7 @@ impl<'a> ImageComposer<'a> {
     }
 
     /// Set the original image to be proceeded, which must be the same size as the mask, and panics if the size is inconsistent.
-    pub fn img(mut self, i: &'a DynamicImage) -> Self {
+    pub fn img(mut self, i: &'a RgbImage) -> Self {
         if self.mask.is_some() {
             assert_eq!(self.mask.as_ref().unwrap().0.dimensions(), i.dimensions());
         }
@@ -152,9 +152,9 @@ fn symmetrize_range(content: (usize, usize), inner: (usize, usize)) -> (usize, u
     let anchor = (inner.0 + inner.1)/2;
 
     // need to defend against potential underflow because inner is inputed by user
-    let half = usize::max(anchor.saturating_sub(content.0), content.1.saturating_sub(anchor));
+    let half = usize::max(anchor.checked_sub(content.0).unwrap_or(0), content.1.checked_sub(anchor).unwrap_or(0));
 
-    (anchor, half, (anchor-half, anchor+half))
+    (anchor, half, (anchor.checked_sub(half).unwrap_or(0), anchor+half))
 }
 
 /// For internal use only. 
@@ -185,12 +185,12 @@ fn fix_ratio(
                 // the same way of correction
                 let correction = ratio.1 / 2;
 
-                let half_fittable_height = (origin_range_half * ratio.0 + correction) / ratio.1;
+                let middle = (origin_middle * ratio.0 + correction) / ratio.1;
+                let half = (output_total - 1) / 2;
 
-                let resized_middle = origin_middle * ratio.0 / ratio.1;
-                resized_range =
-                    (resized_middle - half_fittable_height,
-                    resized_middle + half_fittable_height);
+                let middle_revised = usize::min(output_total-1-half, usize::max(middle, half));
+
+                resized_range = (middle-half, middle+half);
             },
             
             Shrink => {
