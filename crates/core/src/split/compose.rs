@@ -159,20 +159,18 @@ fn symmetrize_range(content: (usize, usize), inner: (usize, usize)) -> (usize, u
 
 /// For internal use only. 
 /// 
-/// Return value: `(ratio, resized_range, shrunk)`.
+/// Return value: `(ratio, resized_range)`.
 fn fix_ratio(
     origin_range_no_rev: (usize, usize),
     origin_inner_range: (usize, usize),
     output_total: usize,
     mode: Overflow,
     ratio: (usize, usize)
-) -> ((usize, usize), (usize, usize), bool){
+) -> ((usize, usize), (usize, usize)){
     let (origin_middle, origin_range_half, origin_range) = symmetrize_range(origin_range_no_rev, origin_inner_range);
 
     let resized_range: (usize, usize);
     let mut new_ratio = ratio;
-
-    let mut shrunk = false;
     
     // deal with overflow
     // overflow <=> output_total < origin_total * ratio
@@ -188,22 +186,19 @@ fn fix_ratio(
                 let middle = (origin_middle * ratio.0 + correction) / ratio.1;
                 let half = (output_total - 1) / 2;
 
-                let middle_revised = usize::min(output_total-1-half, usize::max(middle, half));
-
                 resized_range = (middle-half, middle+half);
             },
             
             Shrink => {
                 new_ratio = (output_total, 2*origin_range_half);
                 resized_range = compute_range_with_correction(origin_range, new_ratio.0, new_ratio.1);
-                shrunk = true;
             }
         }
     } else {
         resized_range = compute_range_with_correction(origin_range, new_ratio.0, new_ratio.1);
     }
     
-    (new_ratio, resized_range, shrunk)
+    (new_ratio, resized_range)
 }
 
 // This `impl` block defines methods about actual operations.
@@ -262,16 +257,16 @@ impl<'a> ImageComposer<'a> {
 
         let ratio = (output_inner_height, origin_inner_height);
 
-        let (ratio, mut needed_y_range, _) = fix_ratio(
+        let (ratio, _) = fix_ratio(
             origin_height_range, mask_padding_y, output_height, self.overflow_y.unwrap(), ratio);
 
         let origin_width_range = self.mask.as_ref().unwrap().x_range().unwrap();
 
-        let (ratio, needed_x_range, shrunk) = fix_ratio(
+        let (ratio, needed_x_range) = fix_ratio(
             origin_width_range, origin_width_range, output_width, self.overflow_x.unwrap(), ratio);
-        if shrunk {
-            needed_y_range = compute_range_with_correction(symmetrize_range(origin_height_range, mask_padding_y).2, ratio.0, ratio.1);
-        }
+        
+        let (ratio, needed_y_range) = fix_ratio(
+            origin_height_range, mask_padding_y, output_height, self.overflow_y.unwrap(), ratio);
 
         let resized_width = page_width * (ratio.0 as u32) / (ratio.1 as u32);
         let resized_height = page_height * (ratio.0 as u32) / (ratio.1 as u32);
