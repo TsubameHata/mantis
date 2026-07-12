@@ -52,5 +52,4 @@ fn main() {
         out.save(format!("{}.result.{}.jpg", args[1], index)).unwrap();
         println!("{}", index);
     }
-    // result.save(args[1].clone()+".result.jpg").unwrap();
 }
