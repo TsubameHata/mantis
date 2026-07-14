@@ -291,7 +291,7 @@ impl<'a> ImageComposer<'a> {
         // create output canvas and paint
 
         // create white canvas
-        let mut output = RgbImage::from_pixel(output_width as u32, output_height as u32, Rgb([255, 255, 255]));
+        let mut output = RgbImage::from_pixel(output_width as u32, output_height as u32, self.background_color.unwrap());
         
         // directly consumes mask and img
         let mask_raw = cropped_mask.into_raw();
