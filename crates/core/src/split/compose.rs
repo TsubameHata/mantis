@@ -131,45 +131,33 @@ impl<'a> ImageComposer<'a> {
     }
 }
 
-/// Utility function for internal use in `ImageComposer::compose`.
-fn compute_range_with_correction(origin_range: (usize, usize), ratio_num: usize, ratio_den: usize) -> (usize, usize) {
-    // emphasize clone semantic
-    let tmp = origin_range;
-
-    // if ignore the correction below
-    // the length of the final result may be slightly different from output
-    let correction = ratio_den / 2;
-    // (tmp.0 * ratio_num / ratio_den, tmp.1 * ratio_num / ratio_den)
-    ((tmp.0 * ratio_num + correction)/ratio_den, (tmp.1 * ratio_num + correction)/ratio_den)
-}
-
 /// For internal use only.
 /// 
 /// Revise the range to make the image aligned by the middle.
 /// 
 /// Return value: `(middle, half_length, new_range)`
-fn symmetrize_range(content: (usize, usize), inner: (usize, usize)) -> (usize, usize, (usize, usize)) {
+fn symmetrize_range(content: (usize, usize), inner: (usize, usize), content_total_size: usize) -> (usize, usize, (usize, usize)) {
     let anchor = (inner.0 + inner.1)/2;
 
     // need to defend against potential underflow because inner is inputed by user
     let half = usize::max(anchor.checked_sub(content.0).unwrap_or(0), content.1.checked_sub(anchor).unwrap_or(0));
 
-    (anchor, half, (anchor.checked_sub(half).unwrap_or(0), anchor+half))
+    (anchor, half, (anchor.checked_sub(half).unwrap_or(0), (anchor+half).min(content_total_size - 1)))
 }
 
 /// For internal use only. 
 /// 
-/// Return value: `(ratio, resized_range)`.
+/// Return value: `(ratio, origin_range)`.
 fn fix_ratio(
     origin_range_no_rev: (usize, usize),
     origin_inner_range: (usize, usize),
+    origin_total: usize,
     output_total: usize,
     mode: Overflow,
     ratio: (usize, usize)
 ) -> ((usize, usize), (usize, usize)){
-    let (origin_middle, origin_range_half, origin_range) = symmetrize_range(origin_range_no_rev, origin_inner_range);
+    let (origin_middle, origin_range_half, mut origin_range) = symmetrize_range(origin_range_no_rev, origin_inner_range, origin_total);
 
-    let resized_range: (usize, usize);
     let mut new_ratio = ratio;
     
     // deal with overflow
@@ -181,24 +169,25 @@ fn fix_ratio(
         match mode {
             Hidden => {
                 // the same way of correction
-                let correction = ratio.1 / 2;
-
-                let middle = (origin_middle * ratio.0 + correction) / ratio.1;
-                let half = (output_total - 1) / 2;
-
-                resized_range = (middle-half, middle+half);
+                let den = 2 * ratio.0;
+                let half = ((output_total - 1)*ratio.1 + den/2) / den;
+                origin_range = (origin_middle.checked_sub(half).unwrap_or(0), (origin_middle + half).min(origin_total - 1))
             },
             
             Shrink => {
                 new_ratio = (output_total, 2*origin_range_half);
-                resized_range = compute_range_with_correction(origin_range, new_ratio.0, new_ratio.1);
             }
         }
-    } else {
-        resized_range = compute_range_with_correction(origin_range, new_ratio.0, new_ratio.1);
     }
     
-    (new_ratio, resized_range)
+    (new_ratio, origin_range)
+}
+
+fn expand_range(range: (usize, usize), total: usize, pad: usize) -> (usize, usize) {
+    (
+        range.0.saturating_sub(pad),
+        (range.1 + pad).min(total - 1),
+    )
 }
 
 // This `impl` block defines methods about actual operations.
@@ -247,55 +236,65 @@ impl<'a> ImageComposer<'a> {
         self.fill_options();
 
         let (page_width, page_height) = self.mask.as_ref().unwrap().0.dimensions();
+        let page_width = page_width as usize;
+        let page_height = page_height as usize;
 
         let (output_width, output_height) = self.output_size.unwrap();
         let output_inner_height = output_height - self.output_padding_y.unwrap()*2;
 
         let mask_padding_y = self.mask_padding_y.unwrap();
-        let origin_inner_height = mask_padding_y.1 - mask_padding_y.0;
+        let origin_inner_height = mask_padding_y.1 - mask_padding_y.0 + 1;
         let origin_height_range = self.mask.as_ref().unwrap().y_range().unwrap();
 
         let ratio = (output_inner_height, origin_inner_height);
 
         let (ratio, _) = fix_ratio(
-            origin_height_range, mask_padding_y, output_height, self.overflow_y.unwrap(), ratio);
+            origin_height_range, mask_padding_y, page_height, output_height, self.overflow_y.unwrap(), ratio);
 
         let origin_width_range = self.mask.as_ref().unwrap().x_range().unwrap();
 
-        let (ratio, needed_x_range) = fix_ratio(
-            origin_width_range, origin_width_range, output_width, self.overflow_x.unwrap(), ratio);
+        let (ratio, origin_x_range) = fix_ratio(
+            origin_width_range, origin_width_range, page_width, output_width, self.overflow_x.unwrap(), ratio);
         
-        let (ratio, needed_y_range) = fix_ratio(
-            origin_height_range, mask_padding_y, output_height, self.overflow_y.unwrap(), ratio);
+        let (ratio, origin_y_range) = fix_ratio(
+            origin_height_range, mask_padding_y, page_height, output_height, self.overflow_y.unwrap(), ratio);
 
-        let resized_width = page_width * (ratio.0 as u32) / (ratio.1 as u32);
-        let resized_height = page_height * (ratio.0 as u32) / (ratio.1 as u32);
+        let origin_x_range = expand_range(origin_x_range, page_width, 1);
+        let origin_y_range = expand_range(origin_y_range, page_height, 1);
+
+        let crop_width = origin_x_range.1 - origin_x_range.0 + 1;
+        let crop_height = origin_y_range.1 - origin_y_range.0 + 1;
 
         // mutability for use of `crop`
+        let mut mask = self.mask.as_ref().unwrap().0.clone();
+        let mut img = self.img.unwrap().clone();
+
+        let cropped_mask = crop(&mut mask, origin_x_range.0 as u32, origin_y_range.0 as u32, 
+            crop_width as u32, crop_height as u32).to_image();
+        let cropped_img = crop(&mut img, origin_x_range.0 as u32, origin_y_range.0 as u32, 
+            crop_width as u32, crop_height as u32).to_image();
+
+        let final_width = (crop_width * ratio.0 / ratio.1).min(output_width);
+        let final_height = (crop_height * ratio.0 / ratio.1).min(output_height);
+
         // for the special format of mask, we must use `FilterType::Nearest`
-        let mut resized_mask = resize(&self.mask.as_ref().unwrap().0, resized_width, resized_height, FilterType::Nearest);
+        let resized_mask = resize(&cropped_mask, final_width as u32, final_height as u32, FilterType::Nearest);
         // the filter here can be more considered
-        let mut resized_img = resize(self.img.unwrap(), resized_width, resized_height, FilterType::Triangle);
+        let resized_img = resize(&cropped_img, final_width as u32, final_height as u32, FilterType::Triangle);
 
-        let cropped_mask = crop(&mut resized_mask, needed_x_range.0 as u32, needed_y_range.0 as u32, 
-            (needed_x_range.1 - needed_x_range.0 + 1) as u32, (needed_y_range.1 - needed_y_range.0 + 1) as u32).to_image();
-        let cropped_img = crop(&mut resized_img, needed_x_range.0 as u32, needed_y_range.0 as u32, 
-            (needed_x_range.1 - needed_x_range.0 + 1) as u32, (needed_y_range.1 - needed_y_range.0 + 1) as u32).to_image();
-        
-        let final_width = cropped_mask.width() as usize;
-        let final_height = cropped_mask.height() as usize;
-
+        // the result cannot be perfectly centered, with an error less than 2px.
+        // it is designed to align the target image slightly left and above, as the following offset defines.
         let offset_x = (output_width - final_width)/2;
         let offset_y = (output_height - final_height)/2;
         
         // create output canvas and paint
 
-        // create white canvas
+        // create canvas with background color
         let mut output = RgbImage::from_pixel(output_width as u32, output_height as u32, self.background_color.unwrap());
         
         // directly consumes mask and img
-        let mask_raw = cropped_mask.into_raw();
-        let img_raw = cropped_img.into_raw();
+        let mask_raw = resized_mask.into_raw();
+        let img_raw = resized_img.into_raw();
 
         // write pixels
         for y in 0..final_height {
