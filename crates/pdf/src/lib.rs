@@ -1,3 +1,4 @@
+use std::env::current_exe;
 use image::RgbImage;
 use pdfium_render::prelude::*;
 
@@ -8,6 +9,13 @@ pub enum Pages {
     Range(usize, usize)
 }
 
+/// Render `pdf_data` into `Vec<image::RgbImage>`.
+/// 
+/// `pdfium.dll` is searched in the following locations, in order of priority:
+/// 
+/// 1. The current working directory.
+/// 2. The directory containing the executable.
+/// 3. Standard system library search paths.
 pub fn render(pdf_data: Vec<u8>, target_width: usize, maximum_height: usize, page_range: Pages) -> Vec<RgbImage> {
     if let Pages::Range(beg, end) = page_range {
         assert!(beg<=end);
@@ -15,6 +23,13 @@ pub fn render(pdf_data: Vec<u8>, target_width: usize, maximum_height: usize, pag
     
     let bindings = Pdfium::bind_to_library(
         Pdfium::pdfium_platform_library_name_at_path("./")
+    ).or_else(
+        |_| {
+            let exe_path = current_exe().unwrap().parent().unwrap().to_path_buf();
+            Pdfium::bind_to_library(
+                Pdfium::pdfium_platform_library_name_at_path(&exe_path)
+            )
+        }
     ).or_else(
         |_| Pdfium::bind_to_system_library() 
     ).unwrap();
