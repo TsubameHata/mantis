@@ -6,4 +6,8 @@ edition.workspace = true
 license.workspace = true
 
 [dependencies]
+core = { path="../core" }
+
+anyhow = "1.0"
+image = "0.25"
 clap = { version = "4.6", features = ["derive"] }
