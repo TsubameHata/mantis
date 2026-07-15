@@ -183,9 +183,11 @@ fn fix_ratio(
     (new_ratio, origin_range)
 }
 
+/// For internal use only. 
+/// Add `pad` to the end of `range`.
 fn expand_range(range: (usize, usize), total: usize, pad: usize) -> (usize, usize) {
     (
-        range.0.saturating_sub(pad),
+        range.0,
         (range.1 + pad).min(total - 1),
     )
 }
