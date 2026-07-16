@@ -61,7 +61,7 @@ pub fn find_peaks(probability: &[f32], min_peak_distance_: usize, min_peak_promi
     centers
 }
 
-pub fn paint_peaks(img: RgbImage, probability: &[f32], peaks: &[usize]) -> RgbImage {
+pub fn paint_peaks(img: &RgbImage, probability: &[f32], peaks: &[usize]) -> RgbImage {
     let w = img.width() as usize;
     let h = img.height() as usize;
 
@@ -82,7 +82,7 @@ pub fn paint_peaks(img: RgbImage, probability: &[f32], peaks: &[usize]) -> RgbIm
         }
     }
 
-    let img_raw = img.into_raw();
+    let img_raw = img.as_raw();
     let dst_raw: Vec<u8> = img_raw.iter().zip(layer_raw.iter())
         .map(|(&i, &l)| (((i as u16)+(l as u16))/2) as u8)
         .collect();
@@ -99,5 +99,5 @@ pub fn paint_peaks_with_default_params(img: &DynamicImage) -> RgbImage {
     let probability = prob(&img.to_luma8());
     let peaks = find_peaks(&probability, h/8, -1f32);
 
-    paint_peaks(img.to_rgb8(), &probability, &peaks)
+    paint_peaks(&img.to_rgb8(), &probability, &peaks)
 }

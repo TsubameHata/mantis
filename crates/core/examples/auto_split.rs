@@ -1,8 +1,8 @@
 use image::ImageReader;
 use std::env;
 
-use core::analysis::gaussian_conv;
-use core::split::{
+use mantis::analysis::gaussian_conv;
+use mantis::split::{
     vector_mask::{VectorMask, VectorShape}, 
     compose::{ImageComposer, Overflow},
     mask::MaskValue

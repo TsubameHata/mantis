@@ -1,7 +1,7 @@
 use image::ImageReader;
 use std::env;
 
-use core::analysis::gaussian_conv;
+use mantis::analysis::gaussian_conv;
 
 fn main() {
     let args: Vec<String> = env::args().collect();

@@ -16,7 +16,7 @@ pub fn sigmoid(x: f32, t: f32, k: f32) -> f32 {
 /// It may be not consistent with the usual definition of percentile when `data.size()` is small due to algorithm.
 /// 
 /// ```rust
-/// # use core::utils::percentile_u8;
+/// # use mantis::utils::percentile_u8;
 /// # 
 /// assert_eq!(percentile_u8(&[1u8, 1, 1, 2, 2, 2, 2], 60), 2);
 /// 
