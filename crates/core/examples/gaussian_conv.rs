@@ -8,6 +8,6 @@ fn main() {
     assert!(args.len()==2);
 
     let img = ImageReader::open(&args[1]).unwrap().decode().unwrap();
-    let result = gaussian_conv::paint_peaks(&img);
+    let result = gaussian_conv::paint_peaks_with_default_params(&img);
     result.save(args[1].clone()+".result.jpg").unwrap();
 }

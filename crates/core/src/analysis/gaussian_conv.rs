@@ -61,15 +61,10 @@ pub fn find_peaks(probability: &[f32], min_peak_distance_: usize, min_peak_promi
     centers
 }
 
-/// Calculate the result and paint the result onto the specific image.
-/// 
-/// It is only for internal justification, therefore the parameters and detailed mode of painting is hard-coded.
-pub fn paint_peaks(img: &DynamicImage) -> DynamicImage {
+pub fn paint_peaks(img: RgbImage, probability: &[f32], peaks: &[usize]) -> RgbImage {
     let w = img.width() as usize;
     let h = img.height() as usize;
 
-    let probability = prob(&img.to_luma8());
-    let peaks = find_peaks(&probability, h/8, -1f32);
 
     let mut layer_raw: Vec<u8> = vec![0u8; w*h*3];
     for (y, l) in probability.iter().enumerate().map(|(index, &prob)| (index, (prob*(w as f32)*0.7) as usize)) {
@@ -87,12 +82,22 @@ pub fn paint_peaks(img: &DynamicImage) -> DynamicImage {
         }
     }
 
-    let img_raw = img.to_rgb8().into_raw();
+    let img_raw = img.into_raw();
     let dst_raw: Vec<u8> = img_raw.iter().zip(layer_raw.iter())
         .map(|(&i, &l)| (((i as u16)+(l as u16))/2) as u8)
         .collect();
+    
+    RgbImage::from_raw(w as u32, h as u32, dst_raw).unwrap()
+}
 
-    let dst = DynamicImage::ImageRgb8(RgbImage::from_raw(w as u32, h as u32, dst_raw).unwrap());
+/// Calculate the result and paint the result onto the specific image.
+/// 
+/// It is only for internal justification, therefore the parameters and detailed mode of painting is hard-coded.
+pub fn paint_peaks_with_default_params(img: &DynamicImage) -> RgbImage {
+    let h = img.height() as usize;
 
-    dst
+    let probability = prob(&img.to_luma8());
+    let peaks = find_peaks(&probability, h/8, -1f32);
+
+    paint_peaks(img.to_rgb8(), &probability, &peaks)
 }
