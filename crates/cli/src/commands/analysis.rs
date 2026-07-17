@@ -2,7 +2,7 @@ use std::path::PathBuf;
 
 use image::ImageReader;
 
-use mantis::analysis::gaussian_conv::{self, find_peaks};
+use mantis::analysis::gaussian_conv;
 
 #[derive(clap::Args)]
 pub struct Args {
@@ -37,7 +37,7 @@ pub fn handle(args: Args) {
 
     let h = img.height() as usize;
     let min_d = ( args.min_distance_ratio * (h as f32) ) as usize;
-    let peaks = find_peaks(&prob, min_d, args.min_prominence);
+    let peaks = gaussian_conv::find_peaks(&prob, min_d, args.min_prominence);
 
     println!("{:#?}", &peaks);
 
