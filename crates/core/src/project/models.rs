@@ -1,5 +1,13 @@
 //! Defines data models in project file, as well as project folder structure.
 //! 
+//! The models which are expected to have an individual file are named with `File` suffix,
+//! and the models which are expected to be stored as fields are named directly as what they represent internally.
+//! 
+//! All structs in this file are expected to be converted to internal structs when read.
+//! The structs in this file only represent their persistent storage models. Do not misunderstand their names and confuse them with those in other modules.
+//! By the way, whether to create a model for some of the following fundamental structs without `impl` is still being considered, 
+//! like `VectorShape` and `MaskValue`, while elevating them into `types.rs`.
+//! 
 //! A Mantis project, at the current stage, 
 //! consists of metadata, page images, vector masks and bitmap masks (, as well as slices produced, for future features ), 
 //! which are packed into a folder,
@@ -31,3 +39,64 @@
 //!         ...
 //!         (naming convention is not strict, and not advised at the current stage of development)
 //! ``` 
+
+use std::path::PathBuf;
+
+use serde::{Serialize, Deserialize};
+use semver::Version;
+
+#[derive(Serialize, Deserialize)]
+pub struct ProjectFile {
+    pub mantis_version: Version,
+    pub pages_file: PathBuf,
+    // to be implemented
+    // pub output_settings: ()
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(tag = "kind", rename_all = "snake_case")]
+pub enum VectorShape {
+    Rect {
+        x: usize,
+        y: usize,
+        w: usize,
+        h: usize
+    },
+    Path {
+        radius: usize,
+        points: Vec<(usize, usize)>
+    }
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(tag = "kind", rename_all = "snake_case")]
+pub enum MaskSource {
+    File(PathBuf),
+    Vector(VectorShape)
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct Mask {
+    /// considering to replace it by `split::mask::MaskValue`,
+    /// while simultaneously elevate `MaskValue` to higher module.
+    pub value: u8,
+    pub shape: MaskSource
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct Slice {
+    pub y_padding: Option<(usize, usize)>,
+    pub output: Option<PathBuf>,
+    pub masks: Vec<Mask>
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct Page {
+    pub image: PathBuf,
+    pub slices: Vec<Slice>
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct PagesFile {
+    pub pages: Vec<Page>
+}
