@@ -8,6 +8,7 @@
 //! 
 //! The structure of the folder, as well as data model and explanation of files, is defined as below.
 //! Folders and files need not always exist except `project.json`, and `pages.json` can exist with different name, which is referenced by `project.json`.
+//! All the reference paths are relative to the project root, which is a strict rule.
 //! 
 //! ```plain
 //! project.mantis/
