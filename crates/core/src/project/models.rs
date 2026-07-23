@@ -45,14 +45,25 @@ use std::path::PathBuf;
 use serde::{Serialize, Deserialize};
 use semver::Version;
 
-use crate::types::{MaskValue, VectorShape};
+use crate::types::{MaskValue, VectorShape, Overflow};
+
+/// To be translated into settings of `ImageComposer`.
+#[derive(Serialize, Deserialize, Default)]
+pub struct OutputOptions {
+    pub size: Option<(usize, usize)>,
+    pub padding_y: Option<usize>,
+    pub background_color: Option<(u8, u8, u8)>,
+    pub overflow_x: Option<Overflow>,
+    pub overflow_y: Option<Overflow>
+}
 
 #[derive(Serialize, Deserialize)]
 pub struct ProjectFile {
     pub mantis_version: Version,
     pub pages_file: PathBuf,
-    // to be implemented
-    // pub output_settings: ()
+
+    #[serde(default)]
+    pub output_options: OutputOptions
 }
 
 #[derive(Serialize, Deserialize)]

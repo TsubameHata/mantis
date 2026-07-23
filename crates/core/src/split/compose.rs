@@ -1,15 +1,7 @@
 use image::{Rgb, RgbImage, imageops::{FilterType, resize, crop}};
 
-use crate::types::MaskValue;
+use crate::types::{MaskValue, Overflow};
 use crate::split::mask::FinalMask;
-
-#[derive(Clone, Copy)]
-/// Defines the action to take when the size of image, after scaling according to the padding, 
-/// is greater than the output canvas.
-pub enum Overflow {
-    Hidden,
-    Shrink
-}
 
 #[derive(Default)]
 pub struct ImageComposer<'a> {

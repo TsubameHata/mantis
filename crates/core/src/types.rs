@@ -41,3 +41,11 @@ pub enum VectorShape {
         points: Vec<(usize, usize)>
     }
 }
+
+/// Defines the action to take when the size of image, after scaling according to the padding, 
+/// is greater than the output canvas.
+#[derive(Clone, Copy, Serialize, Deserialize)]
+pub enum Overflow {
+    Hidden,
+    Shrink
+}

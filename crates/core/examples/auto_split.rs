@@ -2,10 +2,10 @@ use image::ImageReader;
 use std::env;
 
 use mantis::analysis::gaussian_conv;
-use mantis::types::{MaskValue, VectorShape};
+use mantis::types::{MaskValue, VectorShape, Overflow};
 use mantis::split::{
     vector_mask::VectorMask, 
-    compose::{ImageComposer, Overflow},
+    compose::ImageComposer,
 };
 
 fn main() {
