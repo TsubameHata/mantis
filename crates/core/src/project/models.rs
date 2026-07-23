@@ -45,7 +45,7 @@ use std::path::PathBuf;
 use serde::{Serialize, Deserialize};
 use semver::Version;
 
-use crate::types::MaskValue;
+use crate::types::{MaskValue, VectorShape};
 
 #[derive(Serialize, Deserialize)]
 pub struct ProjectFile {
@@ -53,21 +53,6 @@ pub struct ProjectFile {
     pub pages_file: PathBuf,
     // to be implemented
     // pub output_settings: ()
-}
-
-#[derive(Serialize, Deserialize)]
-#[serde(tag = "kind", rename_all = "snake_case")]
-pub enum VectorShape {
-    Rect {
-        x: usize,
-        y: usize,
-        w: usize,
-        h: usize
-    },
-    Path {
-        radius: usize,
-        points: Vec<(usize, usize)>
-    }
 }
 
 #[derive(Serialize, Deserialize)]

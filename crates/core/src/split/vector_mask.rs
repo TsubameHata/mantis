@@ -1,21 +1,8 @@
 use image::{GrayImage, Luma};
 use imageproc::drawing::draw_filled_circle_mut;
 
-use crate::types::MaskValue;
+use crate::types::{MaskValue, VectorShape};
 use crate::split::mask::MaskLayer;
-
-pub enum VectorShape {
-    Rect {
-        x: usize,
-        y: usize,
-        w: usize,
-        h: usize
-    },
-    Path {
-        radius: usize,
-        points: Vec<(usize, usize)>
-    }
-}
 
 pub struct VectorMask {
     pub value: MaskValue,

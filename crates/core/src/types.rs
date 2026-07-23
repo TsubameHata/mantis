@@ -25,3 +25,19 @@ impl TryFrom<u8> for MaskValue {
         }
     }
 }
+
+/// Allowed shapes for `VectorMask`.
+#[derive(Serialize, Deserialize)]
+#[serde(tag = "kind", rename_all = "snake_case")]
+pub enum VectorShape {
+    Rect {
+        x: usize,
+        y: usize,
+        w: usize,
+        h: usize
+    },
+    Path {
+        radius: usize,
+        points: Vec<(usize, usize)>
+    }
+}
