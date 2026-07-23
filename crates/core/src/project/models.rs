@@ -45,6 +45,8 @@ use std::path::PathBuf;
 use serde::{Serialize, Deserialize};
 use semver::Version;
 
+use crate::types::MaskValue;
+
 #[derive(Serialize, Deserialize)]
 pub struct ProjectFile {
     pub mantis_version: Version,
@@ -77,9 +79,7 @@ pub enum MaskSource {
 
 #[derive(Serialize, Deserialize)]
 pub struct Mask {
-    /// considering to replace it by `split::mask::MaskValue`,
-    /// while simultaneously elevate `MaskValue` to higher module.
-    pub value: u8,
+    pub value: MaskValue,
     pub shape: MaskSource
 }
 

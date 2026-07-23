@@ -1,6 +1,7 @@
 use image::{Rgb, RgbImage, imageops::{FilterType, resize, crop}};
 
-use crate::split::mask::{FinalMask, MaskValue};
+use crate::types::MaskValue;
+use crate::split::mask::FinalMask;
 
 #[derive(Clone, Copy)]
 /// Defines the action to take when the size of image, after scaling according to the padding, 

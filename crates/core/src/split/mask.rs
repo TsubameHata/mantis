@@ -1,26 +1,6 @@
 use image::{GrayImage, RgbImage, Rgb};
 
-/// Allowed pixel values in `MaskLayer` and `FinalMask`.
-#[repr(u8)]
-#[derive(Clone, Copy)]
-pub enum MaskValue {
-    Transparent = 0,
-    Include = 1,
-    Exclude = 2
-}
-
-impl TryFrom<u8> for MaskValue {
-    type Error = ();
-
-    fn try_from(value: u8) -> Result<Self, Self::Error> {
-        match value {
-            0 => Ok(Self::Transparent),
-            1 => Ok(Self::Include),
-            2 => Ok(Self::Exclude),
-            _ => Err(())
-        }
-    }
-}
+use crate::types::MaskValue;
 
 /// Represents a mask layer, which is fundamentally an 8-bit gray image.
 /// 

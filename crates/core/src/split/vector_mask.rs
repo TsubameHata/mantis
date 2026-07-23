@@ -1,7 +1,8 @@
 use image::{GrayImage, Luma};
 use imageproc::drawing::draw_filled_circle_mut;
 
-use crate::split::mask::{MaskLayer, MaskValue};
+use crate::types::MaskValue;
+use crate::split::mask::MaskLayer;
 
 pub enum VectorShape {
     Rect {
