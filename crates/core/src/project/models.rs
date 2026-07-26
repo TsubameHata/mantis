@@ -60,7 +60,7 @@ pub struct OutputOptions {
 #[derive(Serialize, Deserialize)]
 pub struct ProjectFile {
     pub mantis_version: Version,
-    pub pages_file: PathBuf,
+    pub pages: PathBuf,
 
     #[serde(default)]
     pub output_options: OutputOptions

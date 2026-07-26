@@ -1,3 +1,5 @@
+pub const VERSION: &str = env!("CARGO_PKG_VERSION");
+
 // alphabetical order, temporarily
 pub mod analysis;
 pub mod utils;
