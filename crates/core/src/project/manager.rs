@@ -1,8 +1,11 @@
+//! Inside this file, it should be further considered whether to convert all `Result` into `io::Result`, or to define a result type.
+
 use std::io;
 use std::fs;
 use std::path::{Path, PathBuf};
 
 use serde::Serialize;
+use serde::de::DeserializeOwned;
 
 use crate::VERSION;
 use crate::project::models::{OutputOptions, PagesFile, ProjectFile};
@@ -43,6 +46,19 @@ pub fn write_json_to_file(obj: &impl Serialize, file: &Path) -> io::Result<()> {
     )?;
 
     Ok(())
+}
+
+/// Read from `file` to construct a `T`.
+pub fn read_json_from_file<T: DeserializeOwned>(file: &Path) -> io::Result<T> {
+    let f = std::fs::File::open(file).ok().ok_or(io::Error::new(
+        io::ErrorKind::Interrupted, 
+        "Cannot open specified file"
+    ))?;
+
+    serde_json::from_reader(f).ok().ok_or(io::Error::new(
+        io::ErrorKind::InvalidData, 
+        "Cannot deserialize data"
+    ))
 }
 
 impl ProjectManager {
