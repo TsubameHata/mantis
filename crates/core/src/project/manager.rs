@@ -1,6 +1,8 @@
 use std::io;
+use std::fs;
 use std::path::{Path, PathBuf};
-use std::str::FromStr;
+
+use serde::Serialize;
 
 use crate::VERSION;
 use crate::project::models::{OutputOptions, PagesFile, ProjectFile};
@@ -9,6 +11,38 @@ pub struct ProjectManager {
     base_path: PathBuf,
     pub project_file: ProjectFile,
     pub pages_file: PagesFile
+}
+
+/// Write `obj` into `file` as JSON string.
+/// Designed for internal use, but set `pub` for examination.
+/// 
+/// `obj` must implement `serde::Serialize`.
+/// 
+/// `file` must be a file and in a valid directory.
+pub fn write_json_to_file(obj: impl Serialize, file: &Path) -> io::Result<()> {
+    // Assert `file` to be a file, and its parent folder exists
+    if !file.parent().ok_or(
+        io::Error::new(
+            io::ErrorKind::AddrNotAvailable,
+            "The parent folder does not exist"
+        )
+    )?.try_exists().is_ok() {
+        return Err(
+            io::Error::new(
+                io::ErrorKind::IsADirectory, 
+                "Specified file is a directory"
+            )
+        );
+    }
+    
+    fs::write(file, serde_json::to_string(&obj)
+        .or(Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "Cannot serialize given object"
+        )))?
+    )?;
+
+    Ok(())
 }
 
 impl ProjectManager {
