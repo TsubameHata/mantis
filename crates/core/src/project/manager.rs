@@ -96,10 +96,12 @@ impl ProjectManager {
     }
 
     pub fn save_project_file(&self) -> io::Result<()> {
-        todo!()
+        write_json_to_file(&self.project_file, &self.project_file_path())?;
+        Ok(())
     }
 
     pub fn save_pages_file(&self) -> io::Result<()> {
-        todo!()
+        write_json_to_file(&self.pages_file, &self.pages_file_path())?;
+        Ok(())
     }
 }
