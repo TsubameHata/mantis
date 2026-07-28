@@ -12,5 +12,5 @@ fn main() {
         output_options: OutputOptions::default()
     };
 
-    write_json_to_file(proj_test, &PathBuf::from("./test.json")).unwrap();
+    write_json_to_file(&proj_test, &PathBuf::from("./test.json")).unwrap();
 }

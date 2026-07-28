@@ -19,7 +19,7 @@ pub struct ProjectManager {
 /// `obj` must implement `serde::Serialize`.
 /// 
 /// `file` must be a file and in a valid directory.
-pub fn write_json_to_file(obj: impl Serialize, file: &Path) -> io::Result<()> {
+pub fn write_json_to_file(obj: &impl Serialize, file: &Path) -> io::Result<()> {
     // Assert `file` to be a file, and its parent folder exists
     if !file.parent().ok_or(
         io::Error::new(
