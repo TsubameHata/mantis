@@ -120,4 +120,14 @@ impl ProjectManager {
         write_json_to_file(&self.pages_file, &self.pages_file_path())?;
         Ok(())
     }
+
+    pub fn reload_project_file(&mut self) -> io::Result<()> {
+        self.project_file = read_json_from_file(&self.project_file_path())?;
+        Ok(())
+    }
+
+    pub fn reload_pages_file(&mut self) -> io::Result<()> {
+        self.pages_file = read_json_from_file(&self.pages_file_path())?;
+        Ok(())
+    }
 }
