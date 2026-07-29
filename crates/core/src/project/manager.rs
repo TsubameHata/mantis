@@ -62,13 +62,16 @@ pub fn read_json_from_file<T: DeserializeOwned>(file: &Path) -> io::Result<T> {
 }
 
 impl ProjectManager {
+    const PROJECT_FILE_PATH: &'static str = "./project.json";
+    const PAGES_FILE_PATH: &'static str = "./pages.json";
+
     /// Creates a new project at specified path.
     /// 
     /// `base_path` is a folder to contain corresponding files.
     /// It is both okay for the folder to be existing or not.
     /// It is recommended for the folder to be blank if it exists.
     pub fn new(base_path: &Path) -> io::Result<Self> {
-        if !base_path.try_exists().is_ok() {
+        if !base_path.try_exists().unwrap_or(false) {
             std::fs::create_dir_all(&base_path)?;
         } else {
             if !base_path.is_dir() {
@@ -83,7 +86,7 @@ impl ProjectManager {
 
         let project_file = ProjectFile {
             mantis_version: semver::Version::parse(VERSION).unwrap(),
-            pages: PathBuf::from("./pages.json"),
+            pages: PathBuf::from(Self::PAGES_FILE_PATH),
             output_options: OutputOptions::default()
         };
 
@@ -91,7 +94,7 @@ impl ProjectManager {
             pages: Vec::new()
         };
 
-        let ret = ProjectManager {
+        let ret = Self {
             base_path: base_path.to_path_buf(),
             project_file,
             pages_file
@@ -104,15 +107,33 @@ impl ProjectManager {
     }
 
     pub fn load(base_path: &Path) -> io::Result<Self> {
-        todo!()
+        if !base_path.is_dir() {
+            return Err(
+                io::Error::new(
+                    io::ErrorKind::NotADirectory, 
+                    "Not a directory"
+                )
+            );
+        }
+        
+        let project_file = read_json_from_file(&base_path.join(Self::PROJECT_FILE_PATH))?;
+        let pages_file = read_json_from_file(&base_path.join(Self::PAGES_FILE_PATH))?;
+
+        Ok(
+            Self {
+                base_path: base_path.to_path_buf(),
+                project_file,
+                pages_file
+            }
+        )
     }
 
     pub fn project_file_path(&self) -> PathBuf {
-        self.base_path.join("./project.json")
+        self.base_path.join(Self::PROJECT_FILE_PATH)
     }
 
     pub fn pages_file_path(&self) -> PathBuf {
-        self.base_path.join("./pages.json")
+        self.base_path.join(Self::PAGES_FILE_PATH)
     }
 
     pub fn save_project_file(&self) -> io::Result<()> {
