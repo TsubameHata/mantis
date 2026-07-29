@@ -67,7 +67,7 @@ impl ProjectManager {
     /// `base_path` is a folder to contain corresponding files.
     /// It is both okay for the folder to be existing or not.
     /// It is recommended for the folder to be blank if it exists.
-    pub fn new(base_path: PathBuf) -> io::Result<Self> {
+    pub fn new(base_path: &Path) -> io::Result<Self> {
         if !base_path.try_exists().is_ok() {
             std::fs::create_dir_all(&base_path)?;
         } else {
@@ -92,7 +92,7 @@ impl ProjectManager {
         };
 
         let ret = ProjectManager {
-            base_path,
+            base_path: base_path.to_path_buf(),
             project_file,
             pages_file
         };
@@ -101,6 +101,10 @@ impl ProjectManager {
         ret.save_pages_file()?;
 
         Ok(ret)
+    }
+
+    pub fn load(base_path: &Path) -> io::Result<Self> {
+        todo!()
     }
 
     pub fn project_file_path(&self) -> PathBuf {
